@@ -13,13 +13,7 @@ def fetch_attendance_html(regid, semester):
         "semester": semester
     }
 
-    response = requests.post(
-        URL,
-        data=payload,
-        headers=HEADERS,
-        timeout=10
-    )
-
+    response = requests.post(URL, data=payload, headers=HEADERS, timeout=10)
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -28,5 +22,22 @@ def fetch_attendance_html(regid, semester):
     if not tables:
         return "<div>No attendance data found</div>"
 
-    # Return only tables (safe HTML)
-    return "".join(str(table) for table in tables)
+    style = """
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: linear-gradient(90deg,#38bdf8,#22d3ee);
+        }
+        th, td {
+            border: 1px solid rgba(0,0,0,0.3);
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+    """
+
+    return style + "".join(str(table) for table in tables)
