@@ -32,9 +32,7 @@ def fetch_attendance_html(regid, semester):
             border: 1px solid rgba(56, 189, 248, 1);
             padding: 8px;
             text-align: center;
-        }
-        th {
-            background: rgba(255,255,255,0.3);
+            width:80%;
         }
     </style>
     """
