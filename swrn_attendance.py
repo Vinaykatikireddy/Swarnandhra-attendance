@@ -5,7 +5,7 @@ DETAILS_URL = "https://www.swarnandhra.ac.in/campusattendance/hostel/search_stud
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
-def extract_details(reg_no: str):
+def fetch_attendance_html(reg_no: str):
     response = requests.post(
         DETAILS_URL,
         data={"search": reg_no},
