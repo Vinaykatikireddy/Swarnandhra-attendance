@@ -20,8 +20,7 @@ def student():
     if not details:
         return jsonify({"error": "Student not found"}), 404
 
-    semester = details.get("semester", "Fourth Semester")
-    semester = semester[5:]
+    semester = "Fourth Semester"
     attendance_html = fetch_attendance_html(regid, semester)
 
     return jsonify({
