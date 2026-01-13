@@ -27,7 +27,7 @@ def fetch_attendance_html(regid, semester):
         table {
             border-collapse: collapse;
             width: 100%;
-            table-layout:fixed;
+           /*table-layout:fixed;*/
             overflow-x:auto;
         }
         th, td {
