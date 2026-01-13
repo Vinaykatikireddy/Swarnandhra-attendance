@@ -1,5 +1,6 @@
-from flask import Flask, request, Response, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from swrn_attendance import fetch_attendance_html
+from swrn_attendance_details import extract_details
 
 app = Flask(__name__, static_folder="static")
 
@@ -9,16 +10,23 @@ def home():
     return send_from_directory("static", "index.html")
 
 
-@app.route("/attendance", methods=["POST"])
-def attendance():
+@app.route("/student", methods=["POST"])
+def student():
     regid = request.form.get("regid", "").strip()
-    semester = request.form.get("semester", "").strip()
+    if not regid:
+        return jsonify({"error": "Missing regid"}), 400
 
-    if not regid or not semester:
-        return "Missing parameters", 400
+    details = extract_details(regid)
+    if not details:
+        return jsonify({"error": "Student not found"}), 404
 
-    html = fetch_attendance_html(regid, semester)
-    return Response(html, mimetype="text/html")
+    semester = details.get("semester", "Fourth Semester")
+    attendance_html = fetch_attendance_html(regid, semester)
+
+    return jsonify({
+        "details": details,
+        "attendance": attendance_html
+    })
 
 
 if __name__ == "__main__":
