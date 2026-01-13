@@ -27,13 +27,15 @@ def fetch_attendance_html(regid, semester):
         table {
             border-collapse: collapse;
             width: 100%;
-           /*table-layout:fixed;*/
+            table-layout:fixed;
             overflow-x:auto;
         }
         th, td {
             border: 1px solid rgba(56, 189, 248, 1);
             padding: 6px;
             text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
     </style>
     """
