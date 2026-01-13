@@ -37,7 +37,7 @@ input,button{
   font-size:15px;
 }
 input{
-  width:100%;
+  width:80%;
   background:#020617;
   color:white;
   border:1px solid #1e293b;
@@ -49,8 +49,9 @@ button{
 }
 .grid{
   display:grid;
+  background:linear-gradient(90deg,#38bdf8,#22d3ee);
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:16px;
+  gap:18px;
 }
 .label{color:var(--muted);font-size:13px}
 .value{font-weight:600}
@@ -82,7 +83,8 @@ button{
     <h3>Attendance</h3>
     <div id="attendance"></div>
   </div>
-<footer style="
+</div>
+  <footer style="
   text-align:center;
   margin-top:40px;
   padding:16px 0;
@@ -91,8 +93,8 @@ button{
   border-top:1px solid #1e293b;
 ">
   Credits swarnandhra.ac.in · Developed by <strong>Vinay</strong>
-</footer>
-</div>
+  </footer>
+  
 
 <script>
 const form = document.getElementById("form");
