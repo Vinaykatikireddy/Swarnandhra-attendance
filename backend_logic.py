@@ -2,7 +2,6 @@ import base64
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-import time
 
 SWARNANDHRA_URL = "https://www.swarnandhra.ac.in/campusattendance/hostel/search_students.php"
 INDIARESULTS_URL = "https://ap-inter-2nd-year-result.indiaresults.com/ap/bieap/intermediate-2-year-gen-exam-result-2024/name-results.aspx"
@@ -20,7 +19,7 @@ def extract_student_details(reg_no: str):
     if response.status_code != 200:
         return None
 
-    soup = BeautifulSoup(response.text, "html.parser")
+    soup = BeautifulSoup(response.text, "lxml")
     card = soup.find("div", class_="student-card")
     if not card:
         return None
@@ -40,7 +39,7 @@ def extract_student_details(reg_no: str):
 
 def asp_hidden(session, url):
     r = session.get(url, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r.text, "lxml")
     return {tag["name"]: tag.get("value","") for tag in soup.find_all("input") if tag.get("name") in ["__VIEWSTATE","__EVENTVALIDATION","__VIEWSTATEGENERATOR"]}
 
 
@@ -59,14 +58,14 @@ def fetch_payment_id(session, hall_ticket, mobile_no, dob):
     }
 
     r = session.post(url, data=payload, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r.text, "lxml")
     span = soup.find("span", id=lambda x: x and "lblPaymentRefID" in x)
     return span.text.strip() if span else None
 
 
 def search_hallticket(session, name):
     r = session.post(INDIARESULTS_URL, data={"name": name}, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r.text, "lxml")
     table = soup.find("table", id="GridView1")
     if not table:
         return None
@@ -79,7 +78,7 @@ def search_hallticket(session, name):
     return None
 
 def extract_hidden(html):
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "lxml")
     return {
         tag["name"]: tag.get("value", "")
         for tag in soup.find_all("input")
@@ -142,7 +141,7 @@ def extract_dob_college_img(regd):
     if "BET e-Portal Login" in r.text:
         raise RuntimeError("Session lost after login")
 
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r.text, "lxml")
 
     #extract college image
     college_img_tag = soup.find(id="ctl00_ImgStudent")
@@ -173,7 +172,7 @@ def fetch_attendance_html(regid, semester):
     return response.text
 
 def extract_personal_info_from_html(html, dob, inter_hall_ticket):
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "lxml")
     
     tag = soup.find(id="lblAadharCardNo")
     aadhaar = tag.get_text(" ", strip=True) if tag else "Not Found"
@@ -213,7 +212,7 @@ def fetch_application_html(session, pid, regno, hall_ticket, mobile_no, dob):
     }
 
     r = session.post(url, data=payload, headers=HEADERS)
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r.text, "lxml")
     a = soup.find("a")
     if a:
         return session.get(urljoin(url, a["href"]), headers=HEADERS).text
@@ -236,7 +235,7 @@ def fetch_regno(session, pid, hall_ticket, mobile_no, dob):
     }
 
     r = session.post(url, data=payload, headers=HEADERS)
-    soup = BeautifulSoup(r.text, "html.parser")      
+    soup = BeautifulSoup(r.text, "lxml")      
     span = soup.find("span", id=lambda x: x and "lblRegistration" in x)
     if not span:
         return None
@@ -252,7 +251,7 @@ def fetch_results(regd):
     if "BET e-Portal Login" in r.text:
         raise RuntimeError("Session lost after login")
 
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = BeautifulSoup(r.text, "lxml")
 
     panel = soup.select_one("#ctl00_cpStudCorner_PanelDueSubjects")
     if not panel:
