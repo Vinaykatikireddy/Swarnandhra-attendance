@@ -371,7 +371,7 @@ function renderStudentCard(student, files){
     if(v === null || typeof v === 'object') continue;
     const keyLower = k.toLowerCase();
     if(['eapcet_application','eapcetapplication','eapcet_application_html'].includes(keyLower)) continue;
-    if(keyLower.includes('college_image') || keyLower.includes('photo')) continue;
+    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid')) continue;
 
     html += `
       <div class="student-item">
