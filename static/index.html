@@ -266,7 +266,7 @@ footer{
 </div>
 
 <footer>
-  Credits swarnandhra.ac.in · Developed by <strong>Vinay</strong>
+  Credits <a href="https://swarnandhra.ac.in">swarnandhra.ac.in</a> · Developed by <strong>Vinay</strong>
 </footer>
 
 <script>
@@ -359,7 +359,23 @@ function renderStudentCard(student, files){
   const collegeImg = files.college_image || student.college_image || files.collegeImage || '';
   const appPhoto = files.photo_base64 || files.photo || '';
   if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;border-radius:8px;display:block"></div>`; }
-  if(appPhoto){ html += `<div><img src="${appPhoto}" alt="Photo" style="max-width:150px;border-radius:8px;display:block"></div>`; }
+  if (appPhoto) {
+  html += `
+    <div
+      style="
+        width:150px;
+        height:200px;
+        border-radius:8px;
+        background-image:url('${appPhoto}');
+        background-size:100% 100%;
+        background-position:center;
+        background-repeat:no-repeat;
+        display:block;
+      ">
+    </div>
+  `;
+}
+
   html += `</div>`;
 
   html += `<h4>${student.Name || student.name || 'Student'}</h4>`;
@@ -371,8 +387,8 @@ function renderStudentCard(student, files){
     if(v === null || typeof v === 'object') continue;
     const keyLower = k.toLowerCase();
     if(['eapcet_application','eapcetapplication','eapcet_application_html'].includes(keyLower)) continue;
-    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid')) continue;
-
+    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid') || keyLower.includes('regulation') || keyLower.includes('lab section')) continue;
+    console.log('Adding field:', k, v);
     html += `
       <div class="student-item">
         <div class="label">${k.toUpperCase()}</div>
