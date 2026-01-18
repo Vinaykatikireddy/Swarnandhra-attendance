@@ -39,8 +39,19 @@ def extract_student_details(reg_no: str):
 
 def asp_hidden(session, url):
     r = session.get(url, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
-    soup = BeautifulSoup(r.text, "lxml")
-    return {tag["name"]: tag.get("value","") for tag in soup.find_all("input") if tag.get("name") in ["__VIEWSTATE","__EVENTVALIDATION","__VIEWSTATEGENERATOR"]}
+    return extract_hidden(r.text)
+
+def extract_hidden(html):
+    soup = BeautifulSoup(html, "lxml")
+    return {
+        tag["name"]: tag.get("value", "")
+        for tag in soup.find_all("input")
+        if tag.get("name") in (
+            "__VIEWSTATE",
+            "__EVENTVALIDATION",
+            "__VIEWSTATEGENERATOR",
+        )
+    }
 
 
 def fetch_payment_id(session, hall_ticket, mobile_no, dob):
@@ -76,18 +87,6 @@ def search_hallticket(session, name):
         if len(cols) >= 3 and cols[1].upper() == name.upper():
             return cols[2]
     return None
-
-def extract_hidden(html):
-    soup = BeautifulSoup(html, "lxml")
-    return {
-        tag["name"]: tag.get("value", "")
-        for tag in soup.find_all("input")
-        if tag.get("name") in (
-            "__VIEWSTATE",
-            "__EVENTVALIDATION",
-            "__VIEWSTATEGENERATOR",
-        )
-    }
 
 def login_student(session, regd):
     login_url = BET_E_PORTAL + "/Login.aspx"
@@ -168,7 +167,7 @@ def fetch_attendance_html(regid, semester):
     response = requests.post(url, data={"regid": regid, "semester": semester}, timeout=DEFAULT_TIMEOUT)
     if response.status_code != 200:
         return None
-    # return decoded HTML (was str(response.content) before)
+    # return decoded HTML
     return response.text
 
 def extract_personal_info_from_html(html, dob, inter_hall_ticket):
