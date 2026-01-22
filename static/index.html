@@ -398,12 +398,12 @@ function renderStudentCard(student, files){
 
   html += `</div><div style="margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap">`;
 
-  // Action buttons: Attendance, Results, Inter Memo, EAPCET Application
+  // Action buttons: Attendance, Results, Inter Memo, EAPCET Application, Share
   const rid = findRegId(student);
-  if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance</button>`;
-  html += `<button onclick="onViewResults('${rid}')">View Results</button>`;
-  if(files.inter_memo){ html += `<button onclick="onViewInterMemo()">View Inter Memo</button>`; }
-  if(student.Eapcet_application){ html += `<button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
+  if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
+  html += `<br><button onclick="onViewResults('${rid}')">View Results</button>`;
+  if(files.inter_memo){ html += `<br><button onclick="onViewInterMemo()">View Inter Memo</button>`; }
+  if(student.Eapcet_application){ html += `<br><button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
   html += `<br><br><button onclick="sharePage()">Share this website</button>`
 
   card.innerHTML = html;
