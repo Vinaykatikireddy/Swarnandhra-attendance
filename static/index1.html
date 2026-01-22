@@ -6,19 +6,17 @@
 <title>Student Dashboard</title>
 
 <style>
-/* ROOT VARIABLES (purple + pink + white theme) */
 :root{
   --bg-gradient: linear-gradient(180deg, #fffafc 0%, #fff6ff 100%);
   --card-bg: linear-gradient(135deg, #f5f0ff 0%, #fff0f8 100%);
   --border: rgba(118,75,162,0.18);
-  --accent: #7c4dff; /* purple */
-  --accent-2: #ff6fb5; /* pink */
+  --accent: #7c4dff;
+  --accent-2: #ff6fb5;
   --muted: #7b6f85;
   --text: #1f1b2e;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont;
 }
 
-/* RESET & BASE */
 *{
   box-sizing:border-box;
   margin:0;
@@ -30,20 +28,16 @@ body{
   color:var(--text);
 }
 
-/* PAGE WRAPPER (pushes footer naturally) */
 .page{
-  min-height:calc(100vh - 80px); /* footer space */
-  /* padding-bottom:40px; */
+  min-height:calc(100vh - 80px);
 }
 
-/* CONTAINER */
 .container{
-  max-width:1280px;            /* wider layout */
+  max-width:1280px;
   margin:auto;
   padding:40px 16px;
 }
 
-/* GENERIC CARD */
 .card{
   background: var(--card-bg);
   border:1px solid var(--border);
@@ -53,7 +47,6 @@ body{
   color:var(--text);
 }
 
-/* FORM */
 input, button{
   padding:14px;
   margin:2px;
@@ -77,7 +70,6 @@ button{
   color:white;
 }
 
-/* STUDENT CARD */
 .student-card{
   background: linear-gradient(135deg,#f8f5ff 0%, #fff3fb 100%);
   border:1px solid var(--border);
@@ -92,20 +84,18 @@ button{
   margin-bottom:16px;
 }
 
-/* Responsive grid — auto grows based on content */
 .student-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:14px;
 }
 
-/* Individual info block */
 .student-item{
   background: rgba(255,255,255,0.88);
   border:1px solid var(--border);
   border-radius:10px;
   padding:12px;
-  overflow-wrap:anywhere;   /* prevents overflow */
+  overflow-wrap:anywhere;
   word-break:break-word;
 }
 
@@ -119,12 +109,10 @@ button{
   color:var(--text);
 }
 
-/* ATTENDANCE TABLE */
 .attendance-wrapper{
   overflow-x:auto;
 }
 
-/* Font auto-adjusts */
 .attendance-wrapper table{
   width:99%;
   border-collapse:collapse;
@@ -140,7 +128,6 @@ button{
   color:var(--text);
 }
 
-/* Table header uses purple-pink gradient */
 .attendance-wrapper thead th{
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   color: white;
@@ -150,14 +137,14 @@ button{
 
 #ctl00_cpStudCorner_pnMarks {
   max-width: 100%;
-  overflow-x: auto;      /* contain zoom */
+  overflow-x: auto;
 }
 #ctl00_cpStudCorner_pnMarks > table {
   transform: scale(1);
   transform-origin: top left;
   transition: transform 0.2s ease;
 }
-/* Mobile scaling */
+
 @media (max-width: 768px) {
   #ctl00_cpStudCorner_pnMarks > table {
     transform: scale(0.9);
@@ -174,7 +161,6 @@ button{
 }
 
 
-/* MODAL (used only for multiple students) */
 .modal{
   position:fixed;
   inset:0;
@@ -219,10 +205,9 @@ button{
   cursor:pointer;
 }
 
-/* Loader (large as requested) */
 .loader {
-  border: 16px solid #ffffff; /* Light */
-  border-top: 16px solid var(--accent); /* Purple */
+  border: 16px solid #ffffff;
+  border-top: 16px solid var(--accent);
   border-radius: 50%;
   width: 120px;
   height: 120px;
@@ -234,7 +219,6 @@ button{
   100% { transform: rotate(360deg); }
 }
 
-/* FOOTER */
 footer{
   text-align:center;
   padding:20px;
@@ -249,7 +233,6 @@ footer{
 <div class="page">
   <div class="container">
 
-    <!-- SEARCH CARD -->
     <div class="card">
       <h2>Student Dashboard</h2>
       <form id="form">
@@ -259,7 +242,6 @@ footer{
       </form>
     </div>
 
-    <!-- RESULT AREA -->
     <div id="results"></div>
 
   </div>
@@ -270,12 +252,10 @@ footer{
 </footer>
 
 <script>
-// Frontend adapted: images above details, explicit action buttons, no auto-attendance
 const form = document.getElementById('form');
 const regidInput = document.getElementById('regid');
 const results = document.getElementById('results');
 
-// Ensure modal exists
 let modal = document.querySelector('.modal');
 if(!modal){
   modal = document.createElement('div');
@@ -354,7 +334,6 @@ function renderStudentCard(student, files){
   const card = document.createElement('div');
   card.className = 'student-card';
 
-  // Images section (above details) — show college image and application photo side-by-side
   let html = `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
   const collegeImg = files.college_image || student.college_image || files.collegeImage || '';
   const appPhoto = files.photo_base64 || files.photo || '';
@@ -380,7 +359,6 @@ function renderStudentCard(student, files){
 
   html += `<h4>${student.Name || student.name || 'Student'}</h4>`;
 
-  // Basic details grid — exclude large fields and binary fields
   html += `<div class="student-grid">`;
   for(const [k,v] of Object.entries(student)){
     // skip objects and big/html fields
@@ -398,7 +376,6 @@ function renderStudentCard(student, files){
 
   html += `</div><div style="margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap">`;
 
-  // Action buttons: Attendance, Results, Inter Memo, EAPCET Application, Share
   const rid = findRegId(student);
   if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
   html += `<br><button onclick="onViewResults('${rid}')">View Results</button>`;
@@ -409,12 +386,10 @@ function renderStudentCard(student, files){
   card.innerHTML = html;
   results.appendChild(card);
 
-  // Store currently displayed data on card element for later use
   card._student = student;
   card._files = files;
 }
 
-// Handlers for actions
 async function onViewAttendance(regid){
   modalTitle.textContent = 'Attendance';
   modalContent.innerHTML = 'Loading attendance...';
@@ -444,7 +419,6 @@ function sharePage() {
 }
 
 function onViewInterMemo(){
-  // find current card data
   const card = results.querySelector('.student-card');
   if(!card) return showMessage('No student loaded');
   const files = card._files || {};
@@ -455,21 +429,19 @@ function onViewInterMemo(){
   if(!blob) return showMessage('Failed to prepare inter memo');
   const url = URL.createObjectURL(blob);
 
-  // If viewport is narrow (mobile/tablet), auto-download instead of showing modal
   if(window.innerWidth < 1200){
     const a = document.createElement('a');
     a.href = url;
     a.download = 'inter_memo.pdf';
-    // Some browsers require the link to be in the document
     document.body.appendChild(a);
     a.click();
     a.remove();
-    // Revoke URL after a short delay
+    
     setTimeout(() => URL.revokeObjectURL(url), 1500);
     return;
   }
 
-  // Desktop/tablet behavior: show in modal with iframe and download link
+  
   modalTitle.textContent = 'Inter Memo';
   modalContent.innerHTML = `<div style="height:70vh"><iframe src="${url}" style="width:100%;height:100%" frameborder="0"></iframe></div><div style="margin-top:8px"><a href="${url}" download="inter_memo.pdf">Download PDF</a></div>`;
   modal.classList.remove('hidden');
@@ -504,7 +476,7 @@ function onViewEapcetApp(){
   if(!html) return showMessage('EAPCET application not available');
 
   modalTitle.textContent = 'EAPCET Application';
-  // create blob for download
+  
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   modalContent.innerHTML = `<div style="max-height:70vh;color:black;overflow:auto;border:1px solid rgba(255,255,255,0.04);padding:8px;background:#060812">${html}</div><div style="margin-top:8px"><a href="${url}" download="application.html">Download HTML</a></div>`;
@@ -519,7 +491,7 @@ function onViewEapcetApp(){
   if(!html) return showMessage('EAPCET application not available');
 
   modalTitle.textContent = 'EAPCET Application';
-  // create blob for download
+  
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   modalContent.innerHTML = `<div style="max-height:70vh;color:black;overflow:auto;border:1px solid rgba(255,255,255,0.04);padding:8px;background:#060812">${html}</div><div style="margin-top:8px"><a href="${url}" download="application.html">Download HTML</a></div>`;
