@@ -404,7 +404,7 @@ function renderStudentCard(student, files){
   html += `<button onclick="onViewResults('${rid}')">View Results</button>`;
   if(files.inter_memo){ html += `<button onclick="onViewInterMemo()">View Inter Memo</button>`; }
   if(student.Eapcet_application){ html += `<button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
-  html += `<br>Share this with your friends.`
+  html += `<br><br><button onclick="sharePage()">Share this website</button>`
 
   card.innerHTML = html;
   results.appendChild(card);
@@ -432,6 +432,16 @@ async function onViewAttendance(regid){
   }
 }
 
+function sharePage() {
+  if (navigator.share) {
+    navigator.share({
+      title: document.title,
+      url: window.location.href
+    });
+  } else {
+    alert("Sharing not supported. Copy this link:\n" + window.location.href);
+  }
+}
 
 function onViewInterMemo(){
   // find current card data
