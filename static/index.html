@@ -546,7 +546,7 @@ function sharePage() {
   if (navigator.share) {
     navigator.share({
       title: document.title,
-      url: "swarnandhra-student-dashboard.vercel.app"
+      url: window.location.href
     });
   } else {
     alert("Sharing not supported. Copy this link:\n" + window.location.href);
