@@ -336,6 +336,11 @@ footer{
 </footer>
 
 <script>
+  if (window.location.hostname !== "swarnandhra-student-dashboard.vercel.app") {
+    window.location.href = "https://swarnandhra-student-dashboard.vercel.app";
+  }
+
+
 const form = document.getElementById('form');
 const regidInput = document.getElementById('regid');
 const output_block = document.getElementById('output_block');
