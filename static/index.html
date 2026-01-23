@@ -311,7 +311,7 @@ form.addEventListener('submit', async (e) => {
       return showMessage(data.message || 'Error fetching student');
 
     if (data.mode === 'basic' || data.mode === 'full') {
-      renderStudentCard(data.student || {}, data.files || {});
+      renderStudentCard(data.student || {"":""}, data.files || {"":""});
       return;
     }
 
