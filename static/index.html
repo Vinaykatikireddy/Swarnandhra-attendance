@@ -46,11 +46,14 @@ body{
 }
 
 .navbar-toggler {
+  display: none;
   font-size: 24px;
-  background: none;
+  background-color: #ef81b6;
+  height: 50px;
   border: none;
   cursor: pointer;
-  display: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar-nav {
@@ -73,9 +76,8 @@ body{
 /* Mobile */
 @media (max-width: 991px) {
   .navbar-toggler{
-    display: block;
+    display: flex;
   }
-
   .navbar-collapse {
     display: none;
     position: absolute;
@@ -303,7 +305,7 @@ footer{
     </a>
   </div>
 
-  <button class="navbar-toggler" style="background-color: #ff6fb5;height: 50px;align-items: center;display: flex;justify-content: center;" onclick="toggleNav()">☰</button>
+  <button class="navbar-toggler" onclick="toggleNav()">☰</button>
 
   <div class="navbar-collapse" id="main_nav">
     <ul class="navbar-nav">
