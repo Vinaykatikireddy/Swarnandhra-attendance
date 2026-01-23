@@ -273,11 +273,11 @@ button{
 }
 
 .loader {
-  border: 16px solid #ffffff;
-  border-top: 16px solid var(--accent);
+  border: 8px solid #ffffff;
+  border-top: 8px solid var(--accent);
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
+  width: 60px;
+  height: 60px;
   animation: spin 2s linear infinite;
 }
 
@@ -326,7 +326,7 @@ footer{
       </form>
     </div>
 
-    <div id="results"></div>
+    <div id="output_block"></div>
 
   </div>
 </div>
@@ -338,7 +338,7 @@ footer{
 <script>
 const form = document.getElementById('form');
 const regidInput = document.getElementById('regid');
-const results = document.getElementById('results');
+const output_block = document.getElementById('output_block');
 
 let modal = document.querySelector('.modal');
 if(!modal){
@@ -367,19 +367,18 @@ function showHowItWorks() {
   modalContent.innerHTML = `<div>Your registration number can reveal so much of your personal information.<br> Using publicly available sources, this website combines information such as college details, results, and date of birth from the official college examination portal, along with additional details like intermediate hall ticket number from third-party result portals. These details may then be used to retrieve EAPCET application information from the APSCHE website.<br> At present, the source of attendance data and mobile number cannot be disclosed. Please note that this platform only consolidates publicly accessible information and does not collect or store private data.<br> If any external source becomes unavailable or restricts access, the system may display limited or basic information only.</div>`;
   modal.classList.remove('hidden');
 }
-
 function showAboutMe() {
   modalTitle.textContent = 'About Me';
   modalContent.innerHTML = `<div>Hello, I’m <strong>Vinay</strong>, a Computer Science Engineering student from the 2024–2028 batch.<br> I built this website with a simple goal, to help students avoid paying condonation fees due to low attendance. Please check your attendance periodically. Avoid checking multiple times in a short span.<br> If you find this useful, don’t forget to share it with your friends.</div>`;
   modal.classList.remove('hidden');
 }
 
-function showMessage(html){ results.innerHTML = `<div class="card">${html}</div>`; }
+function showMessage(html){ output_block.innerHTML = `<div class="card">${html}</div>`; }
 function findRegId(student){ for(const k of Object.keys(student)){ if(k.toLowerCase().includes('A2')) return student[k]; } return student.regid || student.RegNo || student.Reg || ''; }
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  results.innerHTML = '';
+  output_block.innerHTML = '';
 
   const regid = regidInput.value.trim();
   if (!regid) return showMessage('Please enter a registration number.');
@@ -431,30 +430,16 @@ form.addEventListener('submit', async (e) => {
 });
 
 function renderStudentCard(student, files){
-  results.innerHTML = '';
+  output_block.innerHTML = '';
   const card = document.createElement('div');
   card.className = 'student-card';
 
-  let html = `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
+  let html = "";
+  html += `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
   const collegeImg = files.college_image || student.college_image || files.collegeImage || '';
   const appPhoto = files.photo_base64 || files.photo || '';
   if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;border-radius:8px;display:block"></div>`; }
-  if (appPhoto) {
-  html += `
-    <div
-      style="
-        width:150px;
-        height:200px;
-        border-radius:8px;
-        background-image:url('${appPhoto}');
-        background-size:100% 100%;
-        background-position:center;
-        background-repeat:no-repeat;
-        display:block;
-      ">
-    </div>
-  `;
-}
+  if (appPhoto) { html += `<div style="width:150px;height:200px;border-radius:8px;background-image:url('${appPhoto}');background-size:100% 100%;background-position:center;background-repeat:no-repeat;display:block;"></div>`; }
 
   html += `</div>`;
 
@@ -462,12 +447,12 @@ function renderStudentCard(student, files){
 
   html += `<div class="student-grid">`;
   for(const [k,v] of Object.entries(student)){
-    // skip objects and big/html fields
+    
     if(v === null || typeof v === 'object') continue;
     const keyLower = k.toLowerCase();
     if(['eapcet_application','eapcetapplication','eapcet_application_html'].includes(keyLower)) continue;
     if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid') || keyLower.includes('regulation') || keyLower.includes('lab section')) continue;
-    console.log('Adding field:', k, v);
+    
     html += `
       <div class="student-item">
         <div class="label">${k.toUpperCase()}</div>
@@ -476,20 +461,69 @@ function renderStudentCard(student, files){
   }
 
   html += `</div><div style="margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap">`;
-
+  
   const rid = findRegId(student);
   if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
   html += `<br><button onclick="onViewResults('${rid}')">View Results</button>`;
   if(files.inter_memo){ html += `<br><button onclick="onViewInterMemo()">View Inter Memo</button>`; }
   if(student.Eapcet_application){ html += `<br><button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
-  html += `<br><br><button onclick="sharePage()">Share this website</button>`
+  html += `<br><br><button onclick="sharePage()">Share this website</button>`;
 
   card.innerHTML = html;
-  results.appendChild(card);
+  output_block.appendChild(card);
 
+  displayFeedbackForm()
   card._student = student;
   card._files = files;
 }
+
+function displayFeedbackForm() {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = "feedback-card";
+
+  card.innerHTML = `
+    <h2>Share feedback</h2><br>
+    <form id="feedback-form">
+      <input 
+        id="feedback" 
+        name="feedback" 
+        placeholder="Type your feedback" 
+        required
+      >
+      <br><br>
+      <button type="submit">Submit</button>
+    </form>
+  `;
+
+  output_block.appendChild(card);
+}
+
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "feedback-form") return;
+
+  e.preventDefault();
+
+  const form = e.target;
+  const feedbackInput = form.querySelector("#feedback");
+  const card = document.getElementById("feedback-card");
+
+  card.innerHTML = `<h3>Thank you for your feedback.</h3>`;
+
+  fetch("/feedback", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      feedback: feedbackInput.value
+    })
+  }).catch(err => {
+    console.error("Feedback submit failed:", err);
+  });
+});
+
+
 
 async function onViewAttendance(regid){
   modalTitle.textContent = 'Attendance';
@@ -520,7 +554,7 @@ function sharePage() {
 }
 
 function onViewInterMemo(){
-  const card = results.querySelector('.student-card');
+  const card = output_block.querySelector('.student-card');
   if(!card) return showMessage('No student loaded');
   const files = card._files || {};
   const base64 = files.inter_memo;
@@ -570,7 +604,7 @@ function onViewResults(regid){
 
 
 function onViewEapcetApp(){
-  const card = results.querySelector('.student-card');
+  const card = output_block.querySelector('.student-card');
   if(!card) return showMessage('No student loaded');
   const student = card._student || {};
   const html = student.Eapcet_application || student.EapcetApplication || '';
@@ -585,7 +619,7 @@ function onViewEapcetApp(){
 }
 
 function onViewEapcetApp(){
-  const card = results.querySelector('.student-card');
+  const card = output_block.querySelector('.student-card');
   if(!card) return showMessage('No student loaded');
   const student = card._student || {};
   const html = student.Eapcet_application || student.EapcetApplication || '';

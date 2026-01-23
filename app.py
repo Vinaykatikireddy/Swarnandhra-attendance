@@ -1,4 +1,4 @@
-from backend_logic import main, fetch_attendance_html, fetch_results
+from backend_logic import main, fetch_attendance_html, fetch_results, send_feedback
 from flask import Flask, request, jsonify, send_from_directory
 
 app = Flask(__name__, static_folder="static")
@@ -14,6 +14,14 @@ def api_student():
     if not regid:
         return jsonify({"error": "Missing regid"}), 400
     return jsonify(main(regid, client_ip))
+
+@app.route("/feedback", methods=["POST"])
+def api_feedback():
+    data = request.get_json()
+    feedback = data.get("feedback")
+    client_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    return jsonify({"response": send_feedback(feedback, client_ip)})
+
 
 @app.route("/results", methods=["POST"])
 def api_results():

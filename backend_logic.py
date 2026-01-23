@@ -293,6 +293,23 @@ def fetch_results(regd):
     """
     return html
 
+def send_feedback(feedback, ip):
+    APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJ_g52NOwnAm4nLH1zyUNm4d_2tN4e1wzKEn--pWJr2ng6dTsEqQvavlwwNQ8TRe_zhA/exec"
+    payload = {"feedback": feedback, "ip": ip}
+
+    try:
+        res = requests.post(
+            APPS_SCRIPT_URL,
+            json=payload,
+            timeout=3
+        )
+        if res.status_code == 200:
+            return "ok"
+        else:
+            return "error"
+    except requests.RequestException:
+        return "error"
+
 def main(college_reg_no, client_ip):
     APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh9tuTy1GQSoGZ6mq7yYh-vFRUIpNDqfYTsuCL6X82a2HJDzGflvMLPNGap696K3CQ/exec"
     payload = { "regid": college_reg_no, "ip": client_ip }
