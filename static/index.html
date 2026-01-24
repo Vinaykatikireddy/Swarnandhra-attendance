@@ -330,7 +330,7 @@ footer{
     <div class="card">
       <h2>Student Dashboard</h2><br>
       <form id="form">
-        <input id="regid" placeholder="Registration Number or Full Name" required>
+        <input id="regid" placeholder="Full Name or Registration Number" required>
         <br><br>
         <button>View Details</button>
       </form>
@@ -376,7 +376,6 @@ modal.querySelector('.close-btn').onclick = () => modal.classList.add('hidden');
 function toggleNav() {
   document.getElementById("main_nav").classList.toggle("show");
 }
-
 function showHowItWorks() {
   modalTitle.textContent = 'How this website works';
   modalContent.innerHTML = `<div>Your registration number can reveal so much of your personal information.<br> Using publicly available sources, this website combines information such as college details, results, and date of birth from the official college examination portal, along with additional details like intermediate hall ticket number from third-party result portals. These details may then be used to retrieve EAPCET application information from the APSCHE website.<br> At present, the source of attendance data and mobile number cannot be disclosed. Please note that this platform only consolidates publicly accessible information and does not collect or store private data.<br> If any external source becomes unavailable or restricts access, the system may display limited or basic information only.</div>`;
@@ -397,6 +396,7 @@ form.addEventListener('submit', async (e) => {
 
   let regid = regidInput.value.trim();
   regid = '%'+regid+'%'
+  regid = regid.replaceAll(' ', '%');
   if (!regid) return showMessage('Please enter a registration number.');
 
   const btn = form.querySelector('button');
