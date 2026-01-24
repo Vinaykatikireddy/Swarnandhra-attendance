@@ -323,7 +323,6 @@ def main(college_reg_no, client_ip):
         pass
 
     student = extract_student_details(college_reg_no)
-    print(student)
     dob, college_image = extract_dob_college_img(student['regid'])
 
     if not student:

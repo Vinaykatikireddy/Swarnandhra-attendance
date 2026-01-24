@@ -340,9 +340,9 @@ footer{
 </footer>
 
 <script>
-  if (window.location.hostname !== "swarnandhra-student-dashboard.vercel.app") {
-    window.location.href = "https://swarnandhra-student-dashboard.vercel.app";
-  }
+  //if (window.location.hostname !== "swarnandhra-student-dashboard.vercel.app") {
+  //  window.location.href = "https://swarnandhra-student-dashboard.vercel.app";
+  //}
 
 
 const form = document.getElementById('form');
@@ -472,8 +472,8 @@ function renderStudentCard(student){
     
     if(v === null || typeof v === 'object') continue;
     const keyLower = k.toLowerCase();
-    if(['eapcet_application','college_image','eapcet_photo', 'inter_memo'].includes(keyLower)) continue;
-    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid') || keyLower.includes('lab section')) continue;
+    if(['eapcet_application','eapcet_photo', 'inter_memo'].includes(keyLower)) continue;
+    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('lab section')) continue;
     
     html += `
       <div class="student-item">
@@ -485,17 +485,17 @@ function renderStudentCard(student){
   html += `</div><div style="margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap">`;
   
   const rid = findRegId(student);
+  const eapApp = btoa(unescape(encodeURIComponent(student.eapcet_application || '')));
   if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
   html += `<br><button onclick="onViewResults('${rid}')">View Results</button>`;
-  if(student.inter_memo){ html += `<br><button onclick="onViewInterMemo()">View Inter Memo</button>`; }
-  if(student.eapcet_application){ html += `<br><button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
+  if(student.inter_memo){ html += `<br><button onclick="onViewInterMemo('${student.inter_memo}')">View Inter Memo</button>`; }
+  if(eapApp){ html += `<br><button onclick="onViewEapcetApp('${eapApp}')">View EAPCET Application</button>`; }
   html += `<br><br><button onclick="sharePage()">Share this website</button>`;
 
   card.innerHTML = html;
   output_block.appendChild(card);
 
   displayFeedbackForm()
-  card._student = student;
 }
 
 function displayFeedbackForm() {
@@ -574,35 +574,6 @@ function sharePage() {
   }
 }
 
-function onViewInterMemo(){
-  const card = output_block.querySelector('.student-card');
-  if(!card) return showMessage('No student loaded');
-  const student = card._student || {};
-  const base64 = student.inter_memo;
-  if(!base64) return showMessage('Inter memo not available');
-
-  const blob = base64ToBlob(base64, 'application/pdf');
-  if(!blob) return showMessage('Failed to prepare inter memo');
-  const url = URL.createObjectURL(blob);
-
-  if(window.innerWidth < 1200){
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'inter_memo.pdf';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
-    return;
-  }
-
-  
-  modalTitle.textContent = 'Inter Memo';
-  modalContent.innerHTML = `<div style="height:70vh"><iframe src="${url}" style="width:100%;height:100%" frameborder="0"></iframe></div><div style="margin-top:8px"><a href="${url}" download="inter_memo.pdf">Download PDF</a></div>`;
-  modal.classList.remove('hidden');
-}
-
 function onViewResults(regid){
   modalTitle.textContent = 'Results';
   modalContent.innerHTML = 'Loading results...';
@@ -623,36 +594,64 @@ function onViewResults(regid){
   }
 }
 
+function onViewInterMemo(interMemo){
+  const base64 = interMemo || student.inter_memo || '';
+  if(!base64) return showMessage('Inter memo not available');
 
-function onViewEapcetApp(){
-  const card = output_block.querySelector('.student-card');
-  if(!card) return showMessage('No student loaded');
-  const student = card._student || {};
-  const html = student.eapcet_application || '';
-  if(!html) return showMessage('EAPCET application not available');
-
-  modalTitle.textContent = 'EAPCET Application';
-  
-  const blob = new Blob([html], { type: 'text/html' });
+  const blob = base64ToBlob(base64, 'application/pdf');
+  if(!blob) return showMessage('Failed to prepare inter memo');
   const url = URL.createObjectURL(blob);
-  modalContent.innerHTML = `<div style="max-height:70vh;color:black;overflow:auto;border:1px solid rgba(255,255,255,0.04);padding:8px;background:#060812">${html}</div><div style="margin-top:8px"><a href="${url}" download="application.html">Download HTML</a></div>`;
+
+  if(window.innerWidth < 1200){
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'inter_memo.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    return;
+  }
+
+  modalTitle.textContent = 'Inter Memo';
+  modalContent.innerHTML = `<div style="height:70vh"><iframe src="${url}" style="width:100%;height:100%" frameborder="0"></iframe></div><div style="margin-top:8px"><a href="${url}" download="inter_memo.pdf">Download PDF</a></div>`;
   modal.classList.remove('hidden');
 }
 
-function onViewEapcetApp(){
-  const card = output_block.querySelector('.student-card');
-  if(!card) return showMessage('No student loaded');
-  const student = card._student || {};
-  const html = student.Eapcet_application || student.EapcetApplication || '';
-  if(!html) return showMessage('EAPCET application not available');
+function onViewEapcetApp(eapApp){
+  if(!eapApp) return showMessage('EAPCET application not available');
 
   modalTitle.textContent = 'EAPCET Application';
-  
+
+  let html = '';
+
+  try {
+    html = decodeURIComponent(escape(atob(eapApp)));
+  } catch (err) {
+    return showMessage('Failed to decode EAPCET application');
+  }
+
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
-  modalContent.innerHTML = `<div style="max-height:70vh;color:black;overflow:auto;border:1px solid rgba(255,255,255,0.04);padding:8px;background:#060812">${html}</div><div style="margin-top:8px"><a href="${url}" download="application.html">Download HTML</a></div>`;
+
+  modalContent.innerHTML = `
+    <iframe
+      src="${url}"
+      style="width:100%;height:70vh;border:none;background:white"
+      sandbox="allow-same-origin allow-scripts allow-forms"
+    ></iframe>
+
+    <div style="margin-top:8px">
+      <a href="${url}" download="eapcet_application.html">
+        Download HTML
+      </a>
+    </div>
+  `;
+
   modal.classList.remove('hidden');
 }
+
 
 function base64ToBlob(base64, mime){ try{ const bytes = atob(base64); const len = bytes.length; const out = new Uint8Array(len); for(let i=0;i<len;i++) out[i]=bytes.charCodeAt(i); return new Blob([out], {type: mime}); }catch(e){ return null; } }
 </script>
