@@ -320,13 +320,6 @@ footer{
 </div>
 
   <div class="container">
-    <h3>New features:</h3>
-    <ul>
-      <li>Name searching (full name preferred)</li>
-      <li>Added Inter memo for more students</li>
-      <li>Added SQL LIKE pattern matching (first match shown)</li>
-    </ul><br>
-    <p>Send feedback if you encounter any issues or have suggestions for improvement.</p><br>
     <div class="card">
       <h2>Student Dashboard</h2><br>
       <form id="form">
@@ -375,6 +368,15 @@ modal.querySelector('.close-btn').onclick = () => modal.classList.add('hidden');
 
 function toggleNav() {
   document.getElementById("main_nav").classList.toggle("show");
+}
+function showAboutMe() {
+  modalTitle.textContent = 'New features';
+  modalContent.innerHTML = `<div><ul>
+      <li>Name searching (full name preferred)</li>
+      <li>Added Inter memo for more students</li>
+      <li>Added SQL LIKE pattern matching (first match shown)</li>
+    </ul></div>`;
+  modal.classList.remove('hidden');
 }
 function showHowItWorks() {
   modalTitle.textContent = 'How this website works';
