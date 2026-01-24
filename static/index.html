@@ -279,6 +279,7 @@ button{
 .loader {
   border: 8px solid #ffffff;
   border-top: 8px solid var(--accent);
+  margin-top: 15px;
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -386,12 +387,12 @@ function showHowItWorks() {
 }
 function showAboutMe() {
   modalTitle.textContent = 'About Me';
-  modalContent.innerHTML = `<div>Hello, I’m <strong>Vinay</strong>, a Computer Science Engineering student from the 2024–2028 batch.<br> I built this website with a simple goal, to help students avoid paying condonation fees due to low attendance. Please check your attendance periodically. Avoid checking multiple times in a short span.<br> If you find this useful, don’t forget to share it with your friends.</div>`;
+  modalContent.innerHTML = `<div>Hello, I'm <strong>Vinay</strong>, a Computer Science Engineering student from the 2024–2028 batch.<br> I built this website with a simple goal, to help students avoid paying condonation fees due to low attendance. Please check your attendance periodically. Avoid checking multiple times in a short span.<br> If you find this useful, don’t forget to share it with your friends.</div>`;
   modal.classList.remove('hidden');
 }
 
 function showMessage(html){ output_block.innerHTML = `<div class="card">${html}</div>`; }
-function findRegId(student){ for(const k of Object.keys(student)){ if(k.toLowerCase().includes('A2')) return student[k]; } return student.regid || student.RegNo || student.Reg || ''; }
+function findRegId(student){ for(const k of Object.keys(student)){ if(k.toLowerCase().includes('A2')) return student[k]; } return student.regid ||''; }
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -424,17 +425,14 @@ form.addEventListener('submit', async (e) => {
 
     if (!res.ok) throw new Error('Error');
 
-    const data = await res.json();
+    let data = '';
+    data = await res.json();
 
     if (data.mode === 'error')
       return showMessage(data.message || 'Error fetching student');
 
-    if (data.mode === 'basic' || data.mode === 'full') {
-      renderStudentCard(data.student || {"":""});
-      return;
-    }
+    renderStudentCard(data.student || {"":""});
 
-    showMessage('Unexpected response from server');
   } catch (err) {
     showMessage('Request failed: ' + (err.message || err));
   } finally {
