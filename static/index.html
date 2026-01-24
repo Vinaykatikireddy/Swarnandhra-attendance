@@ -105,6 +105,10 @@ body{
   padding:40px 16px;
 }
 
+.container ul{
+  margin-left:40px;
+}
+
 .card{
   background: var(--card-bg);
   border:1px solid var(--border);
@@ -316,7 +320,13 @@ footer{
 </div>
 
   <div class="container">
-
+    <h3>New features:</h3>
+    <ul>
+      <li>Name searching (full name preferred)</li>
+      <li>Added Inter memo for more students</li>
+      <li>Added SQL LIKE pattern matching (first match shown)</li>
+    </ul>
+    <p>Send feedback if you encounter any issues or have suggestions for improvement.</p><br>
     <div class="card">
       <h2>Student Dashboard</h2><br>
       <form id="form">
@@ -385,7 +395,8 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   output_block.innerHTML = '';
 
-  const regid = regidInput.value.trim();
+  let regid = regidInput.value.trim();
+  regid = '%'+regid+'%'
   if (!regid) return showMessage('Please enter a registration number.');
 
   const btn = form.querySelector('button');
@@ -416,7 +427,7 @@ form.addEventListener('submit', async (e) => {
       return showMessage(data.message || 'Error fetching student');
 
     if (data.mode === 'basic' || data.mode === 'full') {
-      renderStudentCard(data.student || {"":""}, data.files || {"":""});
+      renderStudentCard(data.student || {"":""});
       return;
     }
 
@@ -434,17 +445,20 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-function renderStudentCard(student, files){
+function renderStudentCard(student){
   output_block.innerHTML = '';
   const card = document.createElement('div');
   card.className = 'student-card';
 
   let html = "";
   html += `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
-  const collegeImg = files.college_image || student.college_image || files.collegeImage || '';
-  const appPhoto = files.photo_base64 || files.photo || '';
+  let collegeImg = student.college_image || '';
+  let appPhoto = student.eapcet_photo || '';
   if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;border-radius:8px;display:block"></div>`; }
   if (appPhoto) { html += `<div style="width:150px;height:200px;border-radius:8px;background-image:url('${appPhoto}');background-size:100% 100%;background-position:center;background-repeat:no-repeat;display:block;"></div>`; }
+
+  collegeImg = '';
+  appPhoto = '';
 
   html += `</div>`;
 
@@ -455,8 +469,8 @@ function renderStudentCard(student, files){
     
     if(v === null || typeof v === 'object') continue;
     const keyLower = k.toLowerCase();
-    if(['eapcet_application','eapcetapplication','eapcet_application_html'].includes(keyLower)) continue;
-    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid') || keyLower.includes('regulation') || keyLower.includes('lab section')) continue;
+    if(['eapcet_application','college_image','eapcet_photo', 'inter_memo'].includes(keyLower)) continue;
+    if(keyLower.includes('college_image') || keyLower.includes('photo') || keyLower.includes('name') || keyLower.includes('regid') || keyLower.includes('lab section')) continue;
     
     html += `
       <div class="student-item">
@@ -470,8 +484,8 @@ function renderStudentCard(student, files){
   const rid = findRegId(student);
   if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
   html += `<br><button onclick="onViewResults('${rid}')">View Results</button>`;
-  if(files.inter_memo){ html += `<br><button onclick="onViewInterMemo()">View Inter Memo</button>`; }
-  if(student.Eapcet_application){ html += `<br><button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
+  if(student.inter_memo){ html += `<br><button onclick="onViewInterMemo()">View Inter Memo</button>`; }
+  if(student.eapcet_application){ html += `<br><button onclick="onViewEapcetApp()">View EAPCET Application</button>`; }
   html += `<br><br><button onclick="sharePage()">Share this website</button>`;
 
   card.innerHTML = html;
@@ -479,7 +493,6 @@ function renderStudentCard(student, files){
 
   displayFeedbackForm()
   card._student = student;
-  card._files = files;
 }
 
 function displayFeedbackForm() {
@@ -561,8 +574,8 @@ function sharePage() {
 function onViewInterMemo(){
   const card = output_block.querySelector('.student-card');
   if(!card) return showMessage('No student loaded');
-  const files = card._files || {};
-  const base64 = files.inter_memo;
+  const student = card._student || {};
+  const base64 = student.inter_memo;
   if(!base64) return showMessage('Inter memo not available');
 
   const blob = base64ToBlob(base64, 'application/pdf');
@@ -612,7 +625,7 @@ function onViewEapcetApp(){
   const card = output_block.querySelector('.student-card');
   if(!card) return showMessage('No student loaded');
   const student = card._student || {};
-  const html = student.Eapcet_application || student.EapcetApplication || '';
+  const html = student.eapcet_application || '';
   if(!html) return showMessage('EAPCET application not available');
 
   modalTitle.textContent = 'EAPCET Application';
