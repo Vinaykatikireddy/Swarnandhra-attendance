@@ -160,7 +160,7 @@ button{
 .student-item{
   background: rgba(255,255,255,0.88);
   border:1px solid var(--border);
-  border-radius:50%;
+  border-radius:10px;
   padding:12px;
   overflow-wrap:anywhere;
   word-break:break-word;
@@ -456,7 +456,7 @@ function renderStudentCard(student){
   html += `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
   let collegeImg = student.college_image || '';
   let appPhoto = student.eapcet_photo || '';
-  if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;border-radius:8px;display:block";border-radius:50%></div>`; }
+  if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;display:block";border-radius:50%></div>`; }
   if (appPhoto) { html += `<div style="width:150px;height:200px;border-radius:8px;background-image:url('${appPhoto}');background-size:100% 100%;background-position:center;background-repeat:no-repeat;display:block;"></div>`; }
 
   collegeImg = '';
