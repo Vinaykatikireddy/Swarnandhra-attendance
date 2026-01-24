@@ -1,4 +1,5 @@
 import base64
+from tracemalloc import start
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -115,11 +116,14 @@ def login_student(session, regd):
 
     # Auth verification
     if ".ASPXAUTH" not in session.cookies.get_dict():
-        raise RuntimeError("Login failed (ASPXAUTH missing)")
+        return False
+    return True
 
 
 def extract_dob_college_img(regd):
-    login_student(session, regd)
+    log_in = login_student(session, regd)
+    if not log_in:
+        return None, None
 
     # Main student page
     main_url = BET_E_PORTAL + "/StudentLogin/MainStud.aspx"
@@ -138,7 +142,7 @@ def extract_dob_college_img(regd):
     r = session.get(info_url, timeout=DEFAULT_TIMEOUT)
 
     if "BET e-Portal Login" in r.text:
-        raise RuntimeError("Session lost after login")
+        return None, None
 
     soup = BeautifulSoup(r.text, "lxml")
 
@@ -157,7 +161,7 @@ def extract_dob_college_img(regd):
     #extract date of birth
     panel = soup.select_one("#ctl00_cpStudCorner_txtDOB")
     if not panel:
-        raise RuntimeError("Date of birth not found")
+        return None, college_image
 
     dob = panel.get('value', '')
     return dob, college_image
@@ -170,20 +174,19 @@ def fetch_attendance_html(regid, semester):
     # return decoded HTML
     return response.text
 
-def extract_personal_info_from_html(html, dob, inter_hall_ticket):
+def extract_aadhaar_and_eapcet_photo(html):
     soup = BeautifulSoup(html, "lxml")
     
     tag = soup.find(id="lblAadharCardNo")
     aadhaar = tag.get_text(" ", strip=True) if tag else "Not Found"
 
-    files = {}
-
     photo = soup.find(id="imgPhoto")
     if photo:
         img_data = photo.get("src")
-        files["photo_base64"] = img_data
 
+    return aadhaar, img_data
 
+def extract_inter_memo(inter_hall_ticket, dob):
     dob_fmt = __import__("datetime").datetime.strptime(dob, "%d/%m/%Y").strftime("%Y-%m-%d")
     memo = requests.get(
         f"https://bieapi.apcfss.in/apbie/header-services/getShortMemo/2024/March/1/{inter_hall_ticket}/{dob_fmt}/2",
@@ -191,9 +194,9 @@ def extract_personal_info_from_html(html, dob, inter_hall_ticket):
     )
     if memo.status_code == 200:
         pdf_base64 = base64.b64encode(memo.content).decode("utf-8")
-        files["inter_memo"] = pdf_base64
-
-    return aadhaar, files
+        return pdf_base64
+    
+    return None
 
 def fetch_application_html(session, pid, regno, hall_ticket, mobile_no, dob):
     url = "https://cets.apsche.ap.gov.in/EAPCET24/Eapcet/EAPCET_GetPrintApplication.aspx"
@@ -319,14 +322,15 @@ def main(college_reg_no, client_ip):
     except requests.RequestException:
         pass
 
-    dob, college_image = extract_dob_college_img(college_reg_no)
     student = extract_student_details(college_reg_no)
-
-    student["college_image"]=college_image
+    print(student)
+    dob, college_image = extract_dob_college_img(student['regid'])
 
     if not student:
         result = {"mode": "error", "message": "Invalid reg no"}
         return result
+
+    student["college_image"]=college_image
 
     with requests.Session() as s:
         hall_ticket = search_hallticket(s, student["Name"][:30])
@@ -334,6 +338,8 @@ def main(college_reg_no, client_ip):
             result = {"mode": "basic", "student": student}
             return result
 
+        student["inter_memo"] = extract_inter_memo(hall_ticket, dob)
+        
         for mobile in [student.get("Mobile"), student.get("Father Mobile")]:
             if not mobile:
                 continue
@@ -350,14 +356,13 @@ def main(college_reg_no, client_ip):
             return result
 
         html = fetch_application_html(s, pid, regno, hall_ticket, mobile, dob)
-        aadhaar_no, files = extract_personal_info_from_html(html, dob, hall_ticket)
+        aadhaar_no, student["eapcet_photo"] = extract_aadhaar_and_eapcet_photo(html)
 
         student["Aadhaar"]=aadhaar_no
-        student["Eapcet_application"]=html
+        student["eapcet_application"]=html
         
         result = {
             "mode": "full",
-            "student": student,
-            "files": files
+            "student": student
         }
         return result
