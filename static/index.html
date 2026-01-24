@@ -326,7 +326,7 @@ footer{
       <h2>Student Dashboard</h2><br>
       <form id="form">
         <input id="regid" placeholder="Enter Name or Registration Number" required>
-        <br><br>Still in development. close and reopen the website if you face any issues<br><br>
+        <br><br>
         <button>View Details</button>
       </form>
     </div>
@@ -382,7 +382,7 @@ function showNewFeatures() {
 }
 function showHowItWorks() {
   modalTitle.textContent = 'How this website works';
-  modalContent.innerHTML = `<div>Your registration number can reveal so much of your personal information.<br> Using publicly available sources, this website combines information such as college details, results, and date of birth from the official college examination portal, along with additional details like intermediate hall ticket number from third-party result portals. These details may then be used to retrieve EAPCET application information from the APSCHE website.<br> At present, the source of attendance data and mobile number cannot be disclosed. Please note that this platform only consolidates publicly accessible information and does not collect or store private data.<br> If any external source becomes unavailable or restricts access, the system may display limited or basic information only.</div>`;
+  modalContent.innerHTML = `<div>Your registration number can reveal so much of your personal information.<br> Using publicly available sources, this website combines information such as college details, results, and date of birth from the official college examination portal, along with additional details like intermediate hall ticket number from third-party result portals. These details may then be used to retrieve EAPCET application information from the APSCHE website.<br> At present, the source of attendance data and mobile number cannot be disclosed. Please note that this platform only consolidates publicly accessible information and does not collect or store private data.<br> If any external source becomes unavailable or restricts access, the system may display limited or basic information only. This website currently have some concurrence issues i.e if multiple users tried to view their data at once, the data might get swapped.</div>`;
   modal.classList.remove('hidden');
 }
 function showAboutMe() {
@@ -490,6 +490,8 @@ function renderStudentCard(student){
   if(student.inter_memo){ html += `<br><button onclick="onViewInterMemo('${student.inter_memo}')">View Inter Memo</button>`; }
   if(eapApp){ html += `<br><button onclick="onViewEapcetApp('${eapApp}')">View EAPCET Application</button>`; }
   html += `<br><br><button onclick="sharePage()">Share this website</button>`;
+
+  html += `<br><br><p>If anything is wrong, simply try again after some time.</p>`;
 
   card.innerHTML = html;
   output_block.appendChild(card);
