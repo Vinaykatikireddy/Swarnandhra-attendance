@@ -399,9 +399,10 @@ form.addEventListener('submit', async (e) => {
   output_block.innerHTML = '';
 
   let regid = regidInput.value.trim();
+  if (!regid) return showMessage('Please enter a registration number.');
   regid = '%'+regid+'%'
   regid = regid.replaceAll(' ', '%');
-  if (!regid) return showMessage('Please enter a registration number.');
+
 
   const btn = form.querySelector('button');
   btn.disabled = true;
@@ -455,7 +456,7 @@ function renderStudentCard(student){
   html += `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
   let collegeImg = student.college_image || '';
   let appPhoto = student.eapcet_photo || '';
-  if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;border-radius:8px;display:block"></div>`; }
+  if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;border-radius:8px;display:block";border-radius:50%></div>`; }
   if (appPhoto) { html += `<div style="width:150px;height:200px;border-radius:8px;background-image:url('${appPhoto}');background-size:100% 100%;background-position:center;background-repeat:no-repeat;display:block;"></div>`; }
 
   collegeImg = '';
