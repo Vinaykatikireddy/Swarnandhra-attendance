@@ -315,6 +315,7 @@ footer{
   <div class="navbar-collapse" id="main_nav">
     <ul class="navbar-nav">
       <li class="nav-item" onclick="showNewFeatures()">New features</li>
+      <li class="nav-item" onclick="showIssues()">Issues</li>
       <li class="nav-item" onclick="showHowItWorks()">How this works</li>
       <li class="nav-item" onclick="showAboutMe()">About me</li>
     </ul>
@@ -380,9 +381,20 @@ function showNewFeatures() {
     </ul></div>`;
   modal.classList.remove('hidden');
 }
+function showIssues() {
+  modalTitle.textContent = 'Issues & upcoming Features';
+  modalContent.innerHTML = `<div><ul>
+      <li>Details may get swapped when two users click 'View Details' at same time due to concurrency issues.</li>
+      <li>backend processing very slowly.</li>
+      <li>div conataining images have to be centered and image edges have to be rounded</li>
+      <li>check logs and stop users seeing data often without giving feedback</li>
+      <li>UI & UX have to be improved.</li>
+    </ul></div>`;
+  modal.classList.remove('hidden');
+}
 function showHowItWorks() {
   modalTitle.textContent = 'How this website works';
-  modalContent.innerHTML = `<div>Your registration number can reveal so much of your personal information.<br> Using publicly available sources, this website combines information such as college details, results, and date of birth from the official college examination portal, along with additional details like intermediate hall ticket number from third-party result portals. These details may then be used to retrieve EAPCET application information from the APSCHE website.<br> At present, the source of attendance data and mobile number cannot be disclosed. Please note that this platform only consolidates publicly accessible information and does not collect or store private data.<br> If any external source becomes unavailable or restricts access, the system may display limited or basic information only. This website currently have some concurrence issues i.e if multiple users tried to view their data at once, the data might get swapped.</div>`;
+  modalContent.innerHTML = `<div>Your registration number can reveal so much of your personal information.<br> Using publicly available sources, this website combines information such as college details, results, and date of birth from the official college examination portal, along with additional details like intermediate hall ticket number from third-party result portals. These details may then be used to retrieve EAPCET application information from the APSCHE website.<br> At present, the source of attendance data and mobile number cannot be disclosed. Please note that this platform only consolidates publicly accessible information and does not collect or store private data.<br> If any external source becomes unavailable or restricts access, the system may display limited or basic information only.</div>`;
   modal.classList.remove('hidden');
 }
 function showAboutMe() {
