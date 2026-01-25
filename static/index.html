@@ -384,7 +384,7 @@ function showNewFeatures() {
 function showIssues() {
   modalTitle.textContent = 'Issues & upcoming Features';
   modalContent.innerHTML = `<div><ul>
-      <li>Details may get swapped when two users click 'View Details' at same time due to concurrency issues.</li>
+      <li>'View results' have some issues</li>
       <li>backend processing very slowly.</li>
       <li>div conataining images have to be centered and image edges have to be rounded</li>
       <li>check logs and stop users seeing data often without giving feedback</li>
@@ -495,10 +495,10 @@ form.addEventListener('submit', async (e) => {
       body: new URLSearchParams({ regid })
     }, {
   onSlow: () => {
-    btn.textContent = 'loading...';
+    btn.textContent = 'Loading...';
   }, 
       onRetry: (attempt) => {
-        btn.textContent = `Queued… retrying (${attempt})`;
+        btn.textContent = `Server busy: Queued… retrying (${attempt})`;
       }
   });
 
@@ -586,11 +586,11 @@ function displayFeedbackForm() {
       <input 
         id="feedback" 
         name="feedback" 
-        placeholder="Type your feedback" 
+        placeholder="Type your suggestions & issues" 
         required
       >
       <br><br>
-      <button type="submit">Submit</button>
+      <button type="submit">Submit</button><br><br><i>welcoming contributions</i>
     </form>
   `;
 
