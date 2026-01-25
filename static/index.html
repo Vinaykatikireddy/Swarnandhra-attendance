@@ -404,6 +404,64 @@ function showAboutMe() {
   modal.classList.remove('hidden');
 }
 
+
+async function fetchWithQueue(
+  url,
+  options = {},
+  {
+    retryDelay = 4000,
+    maxRetries = 15,
+    onRetry = null,
+    onSlow = null,
+    slowAfter = 2000
+  } = {}
+) {
+  let attempt = 0;
+
+  while (true) {
+    let slowTimer;
+    let slowTriggered = false;
+
+    if (typeof onSlow === 'function') {
+      slowTimer = setTimeout(() => {
+        slowTriggered = true;
+        onSlow();
+      }, slowAfter);
+    }
+
+    let res;
+    try {
+      res = await fetch(url, options);
+    } finally {
+      clearTimeout(slowTimer);
+    }
+
+    if (res.status === 429) {
+      attempt++;
+
+      if (attempt > maxRetries) {
+        throw new Error('Server is busy for too long.');
+      }
+
+      if (typeof onRetry === 'function') {
+        onRetry(attempt);
+      }
+
+      await new Promise(r => setTimeout(r, retryDelay));
+      continue;
+    }
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    return res;
+  }
+}
+
+
+
+
 function showMessage(html){ output_block.innerHTML = `<div class="card">${html}</div>`; }
 function findRegId(student){ for(const k of Object.keys(student)){ if(k.toLowerCase().includes('A2')) return student[k]; } return student.regid ||''; }
 
@@ -421,7 +479,7 @@ form.addEventListener('submit', async (e) => {
   btn.disabled = true;
 
   if (!btn._oldText) btn._oldText = btn.textContent;
-  btn.textContent = 'loading...';
+  btn.textContent = 'Loading...';
 
   if (!btn._loader) {
     const loader = document.createElement('div');
@@ -431,13 +489,18 @@ form.addEventListener('submit', async (e) => {
   }
 
   try {
-    const res = await fetch('/student', {
+    const res = await fetchWithQueue('/student', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ regid })
-    });
-
-    if (!res.ok) throw new Error('Error');
+    }, {
+  onSlow: () => {
+    btn.textContent = 'loading...';
+  }, 
+      onRetry: (attempt) => {
+        btn.textContent = `Queued… retrying (${attempt})`;
+      }
+  });
 
     let data = '';
     data = await res.json();
@@ -545,7 +608,7 @@ document.addEventListener("submit", (e) => {
 
   card.innerHTML = `<h3>Thank you for your feedback.</h3>`;
 
-  fetch("/feedback", {
+  fetchWithQueue("/feedback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -553,7 +616,14 @@ document.addEventListener("submit", (e) => {
     body: JSON.stringify({
       feedback: feedbackInput.value
     })
-  }).catch(err => {
+  }, {
+  onSlow: () => {
+    btn.textContent = 'loading...';
+  }, 
+  onRetry: (attempt) => {
+    btn.textContent = `Queued… retrying (${attempt})`;
+  }
+}).catch(err => {
     console.error("Feedback submit failed:", err);
   });
 });
@@ -566,7 +636,7 @@ async function onViewAttendance(regid){
   modal.classList.remove('hidden');
 
   try {
-    const res = await fetch('/attendance', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({ regid }) });
+    const res = await fetchWithQueue('/attendance', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({ regid }) }, { onSlow: () => { btn.textContent = 'loading...'; },  onRetry: (attempt) => { btn.textContent = `Queued… retrying (${attempt})`; }});
     const data = await res.json();
     let html = data.html;
 
@@ -595,7 +665,7 @@ function onViewResults(regid){
 
   try {
     (async () => {
-        const res = await fetch('/results', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({ regid }) });
+        const res = await fetchWithQueue('/results', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({ regid }) }, { onSlow: () => { btn.textContent = 'loading...'; },  onRetry: (attempt) => { btn.textContent = `Queued… retrying (${attempt})`; }});
         const data = await res.json();
     
         let html = data.html;
