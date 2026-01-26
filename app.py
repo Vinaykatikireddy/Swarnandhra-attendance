@@ -74,8 +74,9 @@ def api_attendance():
 
     try:
         regid = request.form.get("regid")
+        semester = request.form.get("semester")
         return jsonify({
-            "html": fetch_attendance_html(regid, "Fourth Semester")
+            "html": fetch_attendance_html(regid, semester)
         })
     finally:
         request_lock.release()

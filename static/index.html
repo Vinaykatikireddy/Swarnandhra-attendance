@@ -324,6 +324,7 @@ footer{
 
   <div class="container">
     <div class="card">
+      <strong>New feature</strong>: added attendance for seniors<br><br>
       <h2>Student Dashboard</h2><br>
       <form id="form">
         <input id="regid" placeholder="Enter Name or Registration Number" required>
@@ -394,9 +395,8 @@ function showNewFeatures() {
 function showIssues() {
   modalTitle.textContent = 'Issues & upcoming Features';
   modalContent.innerHTML = `<div><ul>
-      <li>backend processing very slowly.</li>
-      <li>Semester value for attendance have to be dynamic.</li>
       <li>multiple students glob.</li>
+      <li>backend processing very slowly.</li>
       <li>results box have to fit on the mobile screen.</li>
       <li>check logs and stop users seeing data often without giving feedback.</li>
     </ul></div>`;
@@ -598,8 +598,10 @@ function renderStudentCard(student){
   html += `</div><div style="margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap">`;
   
   const rid = findRegId(student);
+  semester = student.Semester.slice(4)||"Fourth semester";
+  console.log(semester, student);
   const eapApp = btoa(unescape(encodeURIComponent(student.eapcet_application || '')));
-  if(rid) html += `<br><button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
+  if(rid) html += `<br><button onclick="onViewAttendance('${rid}', '${semester}')">View Attendance😍</button>`;
   html += `<button onclick="onViewResults('${rid}')">View College Results</button>`;
   if(student.inter_memo){ html += `<button onclick="onViewInterMemo('${student.inter_memo}')">View Inter Memo</button>`; }
   if(eapApp){ html += `<button onclick="onViewEapcetApp('${eapApp}')">View EAPCET Application</button>`; }
@@ -668,13 +670,31 @@ document.addEventListener("submit", (e) => {
 
 
 
-async function onViewAttendance(regid){
+async function onViewAttendance(regid, semester){
   modalTitle.textContent = 'Attendance';
   modalContent.innerHTML = 'Loading attendance...';
   modal.classList.remove('hidden');
 
   try {
-    const res = await fetchWithQueue('/attendance', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({ regid }) }, { onSlow: () => { btn.textContent = 'loading...'; },  onRetry: (attempt) => { btn.textContent = `Queued… retrying (${attempt})`; }});
+    const res = await fetchWithQueue(
+  '/attendance',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ regid, semester }),
+  },
+  {
+    onSlow: () => {
+      btn.textContent = 'loading...';
+    },
+    onRetry: (attempt) => {
+      btn.textContent = `Queued… retrying (${attempt})`;
+    },
+  }
+);
+
     const data = await res.json();
     let html = data.html;
 
