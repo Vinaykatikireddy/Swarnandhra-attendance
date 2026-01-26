@@ -331,9 +331,17 @@ footer{
         <button>View Details</button>
       </form>
     </div>
-
+    <div style="width:100%;" class="card" id="useful_links">
+      <h2>Useful Links</h2><br>
+      <ul style="list-style-type: disc;margin-left:25px;">
+        <li><a href="https://www.swarnandhra.ac.in" target="_blank">Swarnandhra official website</a></li>
+        <li><a href="https://www.swarnandhraexambranch.com" target="_blank">Swarnandhra results portal</a></li>
+        <li><a href="javascript:void(0);" onclick="showscet2024();">2024-28 students data</a></li>
+        <li><a href="javascript:void(0);" onclick="showcsexlsx();">2024-28 CSE batch attendance</a></li>
+      </ul>
+    </div>
     <div id="output_block"></div>
-
+    
   </div>
 </div>
 
@@ -375,21 +383,22 @@ function toggleNav() {
 function showNewFeatures() {
   modalTitle.textContent = 'New features';
   modalContent.innerHTML = `<div><ul>
-      <li>Name searching (full name preferred)</li>
-      <li>Added Inter memo for more students</li>
-      <li>Added SQL LIKE pattern matching (first match shown)</li>
+      <li>Name searching (full name preferred).</li>
+      <li>Added Inter memo for more students.</li>
+      <li>Added SQL LIKE pattern matching (first match shown).</li>
+      <li>Added queue system to handle concurrent requests without overlapping.</li>
+      <li>Added useful links to navigate to other websites & data</li>
     </ul></div>`;
   modal.classList.remove('hidden');
 }
 function showIssues() {
   modalTitle.textContent = 'Issues & upcoming Features';
   modalContent.innerHTML = `<div><ul>
-      <li>'View results' have some issues</li>
       <li>backend processing very slowly.</li>
-      <li>div conataining images have to be centered and image edges have to be rounded</li>
-      <li>check logs and stop users seeing data often without giving feedback</li>
-      <li>embedd 1600 students data onto the website.</li>
-      <li>UI & UX have to be improved.</li>
+      <li>Semester value for attendance have to be dynamic.</li>
+      <li>multiple students glob.</li>
+      <li>results box have to fit on the mobile screen.</li>
+      <li>check logs and stop users seeing data often without giving feedback.</li>
     </ul></div>`;
   modal.classList.remove('hidden');
 }
@@ -404,6 +413,33 @@ function showAboutMe() {
   modal.classList.remove('hidden');
 }
 
+function showscet2024(){
+  modalTitle.textContent = 'SCET 2024 Students Data';
+  modalContent.innerHTML = `<div style="height:500px;"><iframe  style="width:100%;height:100%;align-items:center;display:flex;justify-content: center;" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTmWk_jJJ5jF8ZIb4NurdpHkwxSedQ_2Ev4ueHjHd_9PtUrIz5sDPTD7JpZSWSTfQ/pubhtml?widget=true&amp;headers=false"></iframe></div>`;
+  modal.classList.remove('hidden');
+}
+function showcsexlsx(){
+  modalTitle.textContent = 'CSE 2024-28 Batch attendance';
+  modalContent.textContent = "Loading..."
+  modalContent.innerHTML = `<div style="position:relative; height:500px; width:100%;">
+
+  <div id="loader"
+       style="
+         position:absolute;
+         inset:0;
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         background:#fff;
+         font-size:18px;
+         font-weight:600;
+         z-index:10;
+       ">
+    Loading...
+  </div>
+  <div style="height:500px;"><iframe onload="document.getElementById('loader').style.display='none';" style="width:100%;height:100%;align-items:center;display:flex;justify-content: center;" frameborder="0" scrolling="no" src="https://1drv.ms/x/c/0f61d4d407a2bf02/IQT_Rfh72oCsQYovfD199GmsAa10ac8268mQ4doLHARGBBw?em=2&wdAllowInteractivity=False&ActiveCell='Sheet1'!AS3&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True"></iframe></div>`;
+  modal.classList.remove('hidden');
+}
 
 async function fetchWithQueue(
   url,
@@ -469,6 +505,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   output_block.innerHTML = '';
 
+
   let regid = regidInput.value.trim();
   if (!regid) return showMessage('Please enter a registration number.');
   regid = '%'+regid+'%'
@@ -508,6 +545,7 @@ form.addEventListener('submit', async (e) => {
     if (data.mode === 'error')
       return showMessage(data.message || 'Error fetching student');
 
+    useful_links.style.display = 'none';
     renderStudentCard(data.student || {"":""});
 
   } catch (err) {
@@ -529,7 +567,7 @@ function renderStudentCard(student){
   card.className = 'student-card';
 
   let html = "";
-  html += `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">`;
+  html += `<div style="display:flex;gap:12px;align-items:flex-start;justify-content:center;margin-bottom:14px">`;
   let collegeImg = student.college_image || '';
   let appPhoto = student.eapcet_photo || '';
   if(collegeImg){ html += `<div><img src="${collegeImg}" alt="College" style="max-width:150px;display:block;border-radius:10px"></div>`; }
@@ -540,7 +578,7 @@ function renderStudentCard(student){
 
   html += `</div>`;
 
-  html += `<h4>${student.Name || student.name || 'Student'}</h4>`;
+  html += `<h4 style="text-align:center;">${student.Name || student.name || 'Student'}</h4>`;
 
   html += `<div class="student-grid">`;
   for(const [k,v] of Object.entries(student)){
@@ -561,10 +599,10 @@ function renderStudentCard(student){
   
   const rid = findRegId(student);
   const eapApp = btoa(unescape(encodeURIComponent(student.eapcet_application || '')));
-  if(rid) html += `<button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
-  html += `<br><button onclick="onViewResults('${rid}')">View Results</button>`;
-  if(student.inter_memo){ html += `<br><button onclick="onViewInterMemo('${student.inter_memo}')">View Inter Memo</button>`; }
-  if(eapApp){ html += `<br><button onclick="onViewEapcetApp('${eapApp}')">View EAPCET Application</button>`; }
+  if(rid) html += `<br><button onclick="onViewAttendance('${rid}')">View Attendance😍</button>`;
+  html += `<button onclick="onViewResults('${rid}')">View College Results</button>`;
+  if(student.inter_memo){ html += `<button onclick="onViewInterMemo('${student.inter_memo}')">View Inter Memo</button>`; }
+  if(eapApp){ html += `<button onclick="onViewEapcetApp('${eapApp}')">View EAPCET Application</button>`; }
   html += `<br><br><button onclick="sharePage()">Share this website</button>`;
 
   html += `<br><br><p>If anything is wrong, simply try again after some time.</p>`;
