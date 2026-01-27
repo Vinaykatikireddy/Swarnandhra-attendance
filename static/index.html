@@ -325,6 +325,7 @@ footer{
   <div class="container">
     <div class="card">
       <h2>Student Dashboard</h2><br>
+      <strong>Note: </strong>results will be fixed in a while<br>
       <form id="form">
         <input id="regid" placeholder="Enter Name or Registration Number" required>
         <br><br>
@@ -688,10 +689,10 @@ async function onViewAttendance(regid, semester){
   },
   {
     onSlow: () => {
-      btn.textContent = 'loading...';
+      modalContent.innerHTML = `<div class="attendance-wrapper">loading...</div>`;
     },
     onRetry: (attempt) => {
-      btn.textContent = `Queued… retrying (${attempt})`;
+      modalContent.innerHTML = `<div class="attendance-wrapper">Queued… retrying (${attempt})</div>`;
     },
   }
 );
