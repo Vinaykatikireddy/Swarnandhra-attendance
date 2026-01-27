@@ -736,6 +736,7 @@ function onViewResults(regid){
         );
         if(res.status === 429){
           modalContent.innerHTML = `<div>Server is busy. Please try again later.</div>`;
+          return;
         }
         const data = await res.json();
     
