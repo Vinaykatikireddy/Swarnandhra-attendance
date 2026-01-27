@@ -725,8 +725,25 @@ function onViewResults(regid){
 
   try {
     (async () => {
-        const res = await fetchWithQueue('/results', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({ regid }) }, { onSlow: () => { btn.textContent = 'loading...'; },  onRetry: (attempt) => { btn.textContent = `Queued… retrying (${attempt})`; }});
-        const data = await res.json();
+        const res = await fetchWithQueue(
+  '/results',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ regid }),
+  },
+  {
+    onSlow: () => {
+      modalContent.innerHTML = `<div>Loading…</div>`;
+    },
+    onRetry: (attempt) => {
+      modalContent.innerHTML = `<div>Queued… retrying (${attempt})</div>`;
+    },
+  }
+);
+const data = await res.json();
     
         let html = data.html;
 
