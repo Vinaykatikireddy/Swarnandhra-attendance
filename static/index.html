@@ -677,6 +677,7 @@ async function onViewAttendance(regid, semester){
   modal.classList.remove('hidden');
 
   try {
+    const btn = form.querySelector('button');
     const res = await fetchWithQueue(
   '/attendance',
   {
