@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Swarnandhra College of Engineering and Technology (SCET) offers UG B.Tech. programmes in Civil Engineering, Mechanical Engineering, Electrical and Electronics Engineering, Computer Science and Engineering, Electronics and Communication Engineering and Information Technology and PG M.Tech programmes in CAD/CAM, Power Electronics, VLSISD, Computer Science & Engineering, Nanotechnology, and Structural Engineering along with Master of Business Administration and Master of Computer Applications.">
+    <meta name="keywords" content="Swarnandhra College of Engineering and Technology, SCET, Narsapur, B.Tech, M.Tech, MBA, MCA, Civil Engineering, Mechanical Engineering, Electrical and Electronics Engineering, Computer Science and Engineering, Electronics and Communication Engineering, Information Technology, CAD/CAM, Power Electronics, VLSISD, Nanotechnology, Structural Engineering">
+    <meta name="author" content="The Vasista Educational Society">
+
+    <title>Swarnandhra College of Engineering and Technology(autonomous) | SCET Narsapur</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <!-- <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script> -->
+
+    <!-- uikit begin -->
+    <!-- UIkit CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.16.13/dist/css/uikit.min.css" />
+
+<!-- UIkit JS -->
+<script src="js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.16.13/dist/js/uikit-icons.min.js"></script>
+    <!-- uikit end -->
+    <!--bootstrap link-->
+    
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
+    <script src="js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <!--my css file-->
+    <link href="css/style.css" rel="stylesheet">
+   <!-- navbar links-->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"crossorigin="anonymous"></script>
+
+    <!-- nav styles -->
+    <link href="css/main.css" rel="stylesheet">
+
+    <!--font awesome icons -->
+    <!-- <script src="https://kit.fontawesome.com/c0d664df4a.js" crossorigin="anonymous"></script> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+	<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function(){
+		
+		window.addEventListener('scroll', function() {
+	       
+			if (window.scrollY > 50) {
+				document.getElementById('large-main-nav').classList.add('fixed-top');
+				// add padding top to show content behind navbar
+				navbar_height = document.querySelector('.navbar').offsetHeight;
+				document.body.style.paddingTop = navbar_height + 'px';
+			} else {
+			 	document.getElementById('large-main-nav').classList.remove('fixed-top');
+				 // remove padding top from body
+				document.body.style.paddingTop = '0';
+			} 
+		});
+	}); 
+	// DOMContentLoaded  end
+</script>
+<!-- Custom Styles -->
+    <style>
+        .fullscreen-modal {
+            display: none;
+            z-index: 9999;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+        }
+
+        .fullscreen-modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        /* date card */
+
+.date-card {
+    width: 60px;  /* Decreased width */
+    height: 60px;  /* Decreased height */
+    background-color: #ff6b6b;
+    color: white;
+    text-align: center;
+    border-radius: 8px;  /* Slightly smaller border radius */
+    padding: 5px;  /* Decreased padding */
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Slightly smaller shadow */
+}
+
+.date-card .month {
+    font-size: 12px;  /* Decreased font size */
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.date-card .day {
+    font-size: 22px;  /* Decreased font size */
+    font-weight: bold;
+    line-height: 1;
+}
+
+.date-card .weekday {
+    font-size: 9px;  /* Decreased font size */
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+#map {
+  width: 100%;
+  height: 600px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+
+
+.date-card .year {
+    font-size: 9px;  /* Decreased font size */
+    margin-top: 2px;
+}
+/* date card end */
+.modal.fade .modal-dialog {
+    transition: none !important; /* Avoids animation that may cause blinking */
+}
+
+    </style>
+
+    <style>
+        .uk-responsive-width {
+            width: 100%;
+            height: 290px;
+            overflow: hidden;
+        }
+
+        .uk-responsive-width .uk-slider-items li {
+            display: block;
+            width: 100%;
+            height: 290px;
+            /* Use cover to maintain aspect ratio while filling container */
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .uk-responsive-width {
+                height: 160px; /* Adjust height to maintain 1600:290 aspect ratio for mobile */
+            }
+            
+            .uk-responsive-width .uk-slider-items li {
+                height: 160px;
+                /* Show complete image on mobile - contain shows full image */
+                background-size: contain !important;
+                background-position: center center !important;
+                /* Add background color to fill empty space if needed */
+                background-color: #f0f0f0;
+            }
+            
+            .uk-responsive-width .uk-slider-items {
+                height: 160px !important;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .uk-responsive-width {
+                height: 220px; /* Maintain aspect ratio for tablets */
+            }
+            
+            .uk-responsive-width .uk-slider-items li {
+                height: 220px;
+                background-size: contain !important;
+                background-color: #f0f0f0;
+            }
+            
+            .uk-responsive-width .uk-slider-items {
+                height: 220px !important;
+            }
+        }
+
+        /* Container adjustments */
+        .container-fluid {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    
+<style>
+/* Startup Fullscreen Slider - 80% Width/Height with No Padding/Margin */
+.startup-fullscreen-modal {
+    z-index: 99999 !important;
+}
+
+.uk-modal-body {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.startup-fullscreen-modal .uk-modal-dialog {
+    width: 80vw !important;
+    height: 80vh !important;
+    max-width: 80vw !important;
+    max-height: 80vh !important;
+    margin: 10vh auto !important;
+    padding: 0 !important;
+    background: #000 !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;
+}
+
+.startup-slider-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 15px !important;
+}
+
+.startup-slider-wrapper .uk-slider-container {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.startup-slider-wrapper .uk-slider-items {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.startup-slide {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Image Background with Perfect Fitting - No Cropping */
+.slide-bg {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-size: contain !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #000 !important;
+    z-index: 1 !important;
+}
+
+/* Mobile Image Fix */
+@media (max-width: 768px) {
+    .slide-bg {
+        background-size: contain !important;
+        background-color: #000 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide-bg {
+        background-size: contain !important;
+        background-color: #000 !important;
+    }
+}
+
+/* Video Slide */
+.video-slide {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background-color: black !important;
+}
+
+.startup-video {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    z-index: 1 !important;
+}
+
+/* Slide Overlay */
+.slide-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.5) 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2 !important;
+}
+
+.slide-content {
+    text-align: center !important;
+    color: white !important;
+    padding: 30px !important;
+    max-width: 90% !important;
+    z-index: 3 !important;
+}
+
+.slide-content h2 {
+    font-size: 3.5rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1.5rem !important;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8) !important;
+    line-height: 1.2 !important;
+}
+
+.slide-content h3 {
+    font-size: 2.8rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8) !important;
+    line-height: 1.3 !important;
+}
+
+.slide-content p {
+    font-size: 1.4rem !important;
+    font-weight: 300 !important;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important;
+    line-height: 1.4 !important;
+    opacity: 0.95 !important;
+}
+
+/* Enhanced Close Button */
+.startup-close-btn {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
+    z-index: 100000 !important;
+    background: linear-gradient(135deg, #ff4757, #ff3742) !important;
+    color: white !important;
+    border: 3px solid white !important;
+    border-radius: 50px !important;
+    padding: 15px 25px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.startup-close-btn:hover {
+    background: linear-gradient(135deg, #ff3742, #ff2730) !important;
+    transform: scale(1.05) translateY(-2px) !important;
+    box-shadow: 0 12px 35px rgba(255, 71, 87, 0.6) !important;
+    border-color: #ffeb3b !important;
+}
+
+.close-icon {
+    font-size: 18px !important;
+    font-weight: bold !important;
+}
+
+.close-text {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Skip Button */
+.startup-skip-btn {
+    position: absolute !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 100000 !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 12px 24px !important;
+    border-radius: 30px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.startup-skip-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+}
+
+/* Progress Bar */
+.startup-progress-bar {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 5px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    z-index: 99999 !important;
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.startup-progress-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #ff4757, #ffeb3b, #2ed573) !important;
+    width: 0% !important;
+    animation: progressAnimation 42s linear forwards !important;
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.5) !important;
+    border-radius: 15px 0 0 0 !important;
+}
+
+@keyframes progressAnimation {
+    to {
+        width: 100%;
+    }
+}
+
+/* Navigation Arrows */
+.startup-nav-left,
+.startup-nav-right {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    width: 60px !important;
+    height: 60px !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+}
+
+.startup-nav-left:hover,
+.startup-nav-right:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Dots Navigation */
+.startup-dots {
+    position: absolute !important;
+    bottom: 40px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 1000 !important;
+}
+
+.startup-dots li a {
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    width: 12px !important;
+    height: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.startup-dots li.uk-active a {
+    background: white !important;
+    border-color: white !important;
+    transform: scale(1.3) !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .startup-fullscreen-modal .uk-modal-dialog {
+        width: 95vw !important;
+        height: 85vh !important;
+        max-width: 95vw !important;
+        max-height: 85vh !important;
+        margin: 7.5vh auto !important;
+        border-radius: 10px !important;
+    }
+    
+    .startup-slider-wrapper {
+        border-radius: 10px !important;
+    }
+    
+    .startup-progress-bar {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .startup-progress-fill {
+        border-radius: 10px 0 0 0 !important;
+    }
+    
+    /* Mobile Image Display Fix */
+    .slide-bg {
+        background-size: contain !important;
+        background-position: center center !important;
+        background-attachment: local !important;
+        background-color: #000 !important;
+    }
+    
+    .startup-slide {
+        min-height: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .startup-close-btn {
+        top: 10px !important;
+        right: 10px !important;
+        padding: 12px 20px !important;
+        font-size: 12px !important;
+    }
+    
+    .close-icon {
+        font-size: 16px !important;
+    }
+    
+    .close-text {
+        font-size: 10px !important;
+    }
+    
+    .startup-skip-btn {
+        bottom: 15px !important;
+        right: 15px !important;
+        padding: 10px 20px !important;
+        font-size: 12px !important;
+    }
+    
+    .slide-content {
+        padding: 20px !important;
+    }
+    
+    .slide-content h2 {
+        font-size: 2.2rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .slide-content h3 {
+        font-size: 1.8rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .slide-content p {
+        font-size: 1.1rem !important;
+    }
+    
+    .startup-nav-left,
+    .startup-nav-right {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .startup-dots {
+        bottom: 25px !important;
+    }
+    
+    .startup-dots li a {
+        width: 10px !important;
+        height: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .startup-fullscreen-modal .uk-modal-dialog {
+        width: 98vw !important;
+        height: 90vh !important;
+        max-width: 98vw !important;
+        max-height: 90vh !important;
+        margin: 5vh auto !important;
+        border-radius: 8px !important;
+    }
+    
+    .startup-slider-wrapper {
+        border-radius: 8px !important;
+    }
+    
+    .startup-progress-bar {
+        border-radius: 8px 8px 0 0 !important;
+    }
+    
+    .startup-progress-fill {
+        border-radius: 8px 0 0 0 !important;
+    }
+    
+    /* Enhanced Mobile Image Display */
+    .slide-bg {
+        background-size: contain !important;
+        background-position: center center !important;
+        background-attachment: local !important;
+        background-color: #000 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    .startup-slide {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .startup-close-btn {
+        top: 8px !important;
+        right: 8px !important;
+        padding: 10px 16px !important;
+    }
+    
+    .startup-skip-btn {
+        bottom: 12px !important;
+        right: 12px !important;
+        padding: 8px 16px !important;
+        font-size: 11px !important;
+    }
+    
+    .slide-content {
+        padding: 15px !important;
+        max-width: 95% !important;
+    }
+    
+    .slide-content h2 {
+        font-size: 1.8rem !important;
+    }
+    
+    .slide-content h3 {
+        font-size: 1.5rem !important;
+    }
+    
+    .slide-content p {
+        font-size: 1rem !important;
+    }
+    
+    .startup-nav-left,
+    .startup-nav-right {
+        width: 45px !important;
+        height: 45px !important;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .startup-fullscreen-modal .uk-modal-dialog {
+        width: 90vw !important;
+        height: 95vh !important;
+        max-width: 90vw !important;
+        max-height: 95vh !important;
+        margin: 2.5vh auto !important;
+    }
+    
+    .startup-close-btn {
+        top: 5px !important;
+        right: 5px !important;
+        padding: 8px 14px !important;
+    }
+    
+    .startup-skip-btn {
+        bottom: 8px !important;
+        right: 8px !important;
+        padding: 6px 12px !important;
+    }
+    
+    .slide-content h2,
+    .slide-content h3 {
+        font-size: 1.4rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .slide-content p {
+        font-size: 0.9rem !important;
+    }
+    
+    .startup-dots {
+        bottom: 15px !important;
+    }
+}
+
+/* Mobile-Specific Image Solution */
+
+/* Desktop Images - Show by default */
+.desktop-image {
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-size: contain !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #000 !important;
+    z-index: 1 !important;
+}
+
+/* Mobile Images - Hide by default */
+.mobile-image {
+    display: none !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #000 !important;
+    z-index: 1 !important;
+}
+
+/* Tablet Mode - Switch to mobile images */
+@media (max-width: 768px) {
+    .desktop-image {
+        display: none !important;
+    }
+    
+    .mobile-image {
+        display: block !important;
+    }
+}
+
+/* Mobile Mode - Use mobile images with cover sizing */
+@media (max-width: 480px) {
+    .desktop-image {
+        display: none !important;
+    }
+    
+    .mobile-image {
+        display: block !important;
+        background-size: cover !important;
+    }
+}
+
+/* Portrait Mode - Optimize for vertical screens */
+@media (orientation: portrait) and (max-width: 768px) {
+    .mobile-image {
+        background-size: cover !important;
+        background-position: center center !important;
+    }
+}
+/* Fixed Mobile Image Display for 720x1280 images */
+@media (max-width: 768px) {
+    .mobile-image {
+        background-size: contain !important;
+        background-position: center center !important;
+        background-color: #000 !important;
+    }
+    
+    /* Make modal larger on mobile for better image display */
+    .startup-fullscreen-modal .uk-modal-dialog {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-image {
+        background-size: contain !important;
+        background-position: center center !important;
+        background-color: #000 !important;
+    }
+    
+    .startup-fullscreen-modal .uk-modal-dialog {
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+}
+</style>
+</head>
+
+<body>
+    <!-- yellow strip section starts-->
+  
+<section class="center-links">
+    <ul class="centered-nav">
+    <li><a href="https://swarnandhra.directverify.in/">Student Certificate Verification</a></li>
+        <li><a href="nba.php">NBA Report</a></li>
+        <li><a href="iqac.php">IQAC</a></li>
+        <li><a href="nirfranking.php">NIRF</a></li>
+        <li><a href="naacssr.php">NAAC SSR</a></li>
+        <li><a href="https://swarnandhra.ac.in/feedback/">Feedback</a></li>
+        <li><a href="https://mail.google.com/a/swarnandhra.ac.in"><i class="fa-solid fa-earth-americas"></i> Web Mail</a></li>
+        <li><a href="https://www.facebook.com/profile.php?id=100088056803492" target="_blank"><i class="fa-brands fa-facebook-f"></i> Facebook</a></li>
+        <!-- <li><a href="www.linkedin.com/in/swarnandhra-college-engineering-autonomous-2a1969259" target="_blank"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a></li> -->
+        <li><a href="alumniportal.php">Alumni</a></li>
+        <li><a href="grievance_portal/">Grievance</a></li>
+        <li><a href="idealab/">AICTE-IDEA Lab</a></li>
+        <li><a href="contactus.php">Contact</a></li>
+    </ul>
+</section>
+
+<!-- yellow strip section ends -->
+
+<!-- second section with some navigations starts   -->
+<section>
+    <div class="container md-top-nav-secion">
+        <div class="row align-items-center">
+            <div class="col-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="text-right" href="index.php">
+                        <img class="logo img-fluid" src="img/logo/swarnandhra-logo.png" alt="Swarnandhra logo">
+                    </a>
+                 
+                </div>
+            </div>
+            <div class="col-4">
+        <div class="small-logos d-flex">
+            <img class="img-fluid" src="img/nba.png" alt="NBA logo">
+            <img class="img-fluid" src="img/naaca.png" alt="NAAC logo" >
+        </div>
+    </div>
+    <div class="col-md-4" style="display: flex; flex-direction: column; justify-content: space-around; align-items: center; text-align: center; padding: 2px; ">
+    <a href="https://www.swarnandhra.ac.in/webmanager" target="_blank" style="color:black;text-decoration: none; display: block; width: 100%;  ">News & Gallery</a>
+    <a href="swarnandhraexaminationportal/" style="color:black;text-decoration: none; display: block; width: 100%;  ">Examination Portal</a>
+    <a href="https://www.swarnandhraexambranch.com/" target="_blank" style="color:black;text-decoration: none; display: block; width: 100%;  ">Results</a>
+    <!-- border: 1px dashed lightgray; -->
+</div>
+
+
+
+        </div>
+    </div>
+</section>
+<!-- second section with some navigations ends-->
+
+<!-- mobile view of top 2 rows starts-->
+<div class="container-fluid mbl-top-section">
+    <div class="container">
+        <!--  <div class="row row-cols-2">
+            <div class="col-4 top-strip-all top-strip-one bg-danger">
+                <p class="top-strip-one-text text-white">Admissions Open</p>
+            </div>
+            <div class="col-8 top-strip-all top-strip-two" style="background-color: #213a7c;">
+                <marquee class="top-strip-two-text"> Contact Us:- Dr. Bomma Rama Krishna: 7989662002, Dr. V.
+                    Swaminadham: 9346610099</marquee>
+            </div>
+        </div> -->
+        <div class="row row-cols-2">
+            <div class="col-7 top-strip-all top-strip-three" style="background-color: #213a7c;">
+                <p class="top-strip-three-text text-white">Student Online Certificate Verification </p>
+            </div>
+            <div class="col-5 top-strip-icons" style="background-color: #213a7c;">
+                <ul>
+                    <li><a href="https://www.facebook.com/profile.php?id=100088056803492" target="_blank"><i class="fa-brands fa-facebook-f text-white"></i></a></li>
+                    <li><a href="https://twitter.com/SWRN_Autonomous" target="_blank"><i class="fa-brands fa-twitter text-white"></i></a></li>
+                    <li><a href="www.linkedin.com/in/swarnandhra-college-engineering-autonomous-2a1969259"><i class="fa-brands fa-linkedin-in text-white"></i></a></li>
+                    <!--<li><i class="fa-brands fa-instagram text-white"></i></li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mbl-top-nav">
+    <div class="container">
+        <div class="inner-mbl-top-nav">
+            <a href="https://www.swarnandhra.ac.in/webmanager" target="_blank">News & Gallery </a>
+            <a href="nba.php">NBA Report</a>
+            <a href="swarnandhraexaminationportal/">Examination</a>
+            <a href="https://www.swarnandhraexambranch.com/">Results</a>
+            <a href="grievance_portal/">Grievance</a>
+            
+            <a href="iqac.php">IQAC</a>
+            <a href="nirfranking.php">NIRF</a>
+            <a href="naacssr.php">NAAC SSR</a>
+            <a href="https://swarnandhra.ac.in/feedback/">feedback</a>
+            <a href="https://mail.google.com/a/swarnandhra.ac.in">Web Mail</a>
+            <a href="alumniportal.php">ALUMINI</a>
+           <a href="idealab/">AICTE-IDEA Lab</a>
+            <!-- <a href="#">STAFF</a>
+            <a href="#">FACILITIES</a> 
+            <a href="photogallery.php">GALLERY</a>-->
+            <a href="contactus.php">CONTACT</a>
+        </div>
+    </div>
+</div>
+<!-- mobile view of to 2 rows ends -->
+<!-- large device navigation starts -->
+<nav id="large-main-nav" class="navbar navbar-expand-lg navbar-dark large-main-nav">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <img src="img/logo/swarnandhra-logo.png" alt="swarnandhra logo">
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="main_nav">
+            <ul class="navbar-nav">
+                <li class="nav-item active"> <a class="nav-link  text-white  " href="index.php">Home </a> </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   text-white dropdown-toggle" href="#" data-bs-toggle="dropdown"> About </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="profile.php"> Profile </a></li>
+                        <li><a class="dropdown-item" href="visionmission.php"> Vision, Mission</a></li>
+                        <li><a class="dropdown-item" href="foundersecretary.php"> Founder Secretary</a></li>
+                        <li><a class="dropdown-item" href="management.php"> Management </a></li>
+                        <li><a class="dropdown-item" href="principal.php"> Principal </a></li>
+                        <li><a class="dropdown-item" href="viceprincipal.php"> Vice-Principal </a></li>
+                        <li><a class="dropdown-item" href="governingbody.php"> Governing Board</a></li>
+                        <li><a class="dropdown-item" href="#"> Approval Letter &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="jntukapproval.php"> JNTUK </a></li>
+                                <li><a class="dropdown-item" href="aicteeoa.php"> AICTE </a></li>
+                                <li><a class="dropdown-item" href="/college"> College &raquo; </a>
+                                    <ul class="submenu dropdown-menu">
+                                        <li><a class="dropdown-item" href="highereducationapproval.php"> Higher Education
+                                                Permission Letter</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="#"> Status &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="autonomus_status.php">Autonomous</a></li>
+                                <li><a class="dropdown-item" href="naac_status.php">NAAC</a></li>
+                                <li><a class="dropdown-item" href="ugc2f_status.php">UGC 2F</a></li>
+                                <li><a class="dropdown-item" href="ugc12b_status.php">UGC 12(B)</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="strategic_plan.php"> Strategic Plan </a></li>
+<!-- <li><a class="dropdown-item" href="servicerules.php"> Service Rules </a></li> -->
+                        <li><a class="dropdown-item" href="organogram.php"> Organogram </a></li>
+                        <li><a class="dropdown-item" href="bestpractices.php"> Best Practices </a></li>
+                        <li><a class="dropdown-item" href="itpolicy.php"> IT Policy </a></li>
+                        <li><a class="dropdown-item" href="maintancepolicy.php"> Maintance Policy </a></li>
+                        <li><a class="dropdown-item" href="awards.php"> Awards </a></li>
+                        <li><a class="dropdown-item" href="milestones.php"> Milestones </a></li>
+                        <li><a class="dropdown-item" href="nirfranking.php"> Rankings </a></li>
+                        <li><a class="dropdown-item" href="mous.php"> MOUs </a></li>
+                        <li><a class="dropdown-item" href="collegeundertaking.php"> College Undertaking </a></li>
+                        <li><a class="dropdown-item" href="photogallery.php"> Photo Gallery </a></li>
+                        <li><a class="dropdown-item" href="collegevideo.php"> College Video </a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Academics </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="academiccouncil.php"> Academic Council </a></li>
+                        <li><a class="dropdown-item" href="#"> Board of Studies &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="csebos.php">CSE BOS</a></li>
+                                <li><a class="dropdown-item" href="ecebos.php">ECE BOS</a></li>
+                                <li><a class="dropdown-item" href="civilbos.php">Civil BOS</a></li>
+                                <li><a class="dropdown-item" href="eeebos.php">EEE BOS</a></li>
+                                <li><a class="dropdown-item" href="mechanicalbos.php">Mechanical BOS</a></li>
+                                <li><a class="dropdown-item" href="itbos.php">IT BOS</a></li>
+                                <li><a class="dropdown-item" href="mcabos.php">MCA BOS</a></li>
+                                <li><a class="dropdown-item" href="mbabos.php">MBA BOS</a></li>
+                                <li><a class="dropdown-item" href="shbos.php">S&H BOS</a></li>
+                                <li><a class="dropdown-item" href="/previousyears">Previous Years</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="financecommittee.php"> Finance committee </a></li>
+                        
+                        <!--<li><a class="dropdown-item" href="#"> Regulations &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="#">UG &raquo; </a>
+                                    <ul class="submenu dropdown-menu">
+                                        <li><a class="dropdown-item" href="r14regulationsug.php">UG Regulation-2014</a></li>
+                                        <li><a class="dropdown-item" href="r16regulationsug.php">UG Regulation-2016</a></li>
+                                        <li><a class="dropdown-item" href="r19regulationsug.php">UG Regulation-2019</a></li>
+                                        <li><a class="dropdown-item" href="r20regulationsug.php">UG Regulation-2020</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="dropdown-item" href="#">PG &raquo; </a>
+                                    <ul class="submenu dropdown-menu">
+                                        <li><a class="dropdown-item" href="r14regulationspg.php">PG Regulation-2014</a></li>
+                                        <li><a class="dropdown-item" href="r16regulationspg.php">PG Regulation-2016</a></li>
+                                        <li><a class="dropdown-item" href="r19regulationspg.php">PG Regulation-2019</a></li>
+                                        <li><a class="dropdown-item"  href="r20regulationspg.php">PG Regulation-2020</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>-->
+                        <li><a class="dropdown-item" href="/curriculum"> Curriculum & Syllabus &raquo;</a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="#">UG &raquo; </a>
+                                    <ul class="submenu dropdown-menu">
+                                        <li><a class="dropdown-item" href="r14syllabusug.php">R-14 UG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r16syllabusug.php">R-16 UG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r19syllabusug.php">R-19 UG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r20syllabusug.php">R-20 UG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r23syllabusug.php">R-23 UG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r24syllabusug.php">R-24 UG Courses</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="dropdown-item" href="#">PG &raquo; </a>
+                                    <ul class="submenu dropdown-menu">
+                                        <li><a class="dropdown-item" href="r14syllabuspg.php">R-14 PG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r16syllabuspg.php">R-16 PG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r19syllabuspg.php">R-19 PG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r20syllabuspg.php">R-20 PG Courses</a></li>
+                                        <li><a class="dropdown-item" href="r24syllabuspg.php">R-24 PG Courses</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <!-- <li><a class="dropdown-item" href="facultyid"> Faculty ID &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="csestaff.php">CSE</a></li>
+                                <li><a class="dropdown-item" href="/aiml">AI & ML</a></li>
+                                <li><a class="dropdown-item" href="/civil">Civil</a></li>
+                                <li><a class="dropdown-item" href="/ece">ECE</a></li>
+                                <li><a class="dropdown-item" href="/eee">EEE</a></li>
+                                <li><a class="dropdown-item" href="/it">IT</a></li>
+                                <li><a class="dropdown-item" href="/mechanical">Mechanical</a></li>
+                                <li><a class="dropdown-item" href="/robotics">Robotics</a></li>
+                                <li><a class="dropdown-item" href="/mba">MBA</a></li>
+                                <li><a class="dropdown-item" href="mcastaff.php">MCA</a></li>
+                                <li><a class="dropdown-item" href="/s&h">S & H </a></li>
+                            </ul>
+                        </li> -->
+                        <li><a class="dropdown-item" href="committees.php"> Committees </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Admissions </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"> Admission Manual &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="admissionmanual2019-20.php">A.Y 2019-20</a></li>
+                                <li><a class="dropdown-item" href="admissionmanual2020-21.php">A.Y 2020-21</a></li>
+                            </ul>
+                        </li>
+			<li><a class="dropdown-item" href="courses.php"> Courses Offered </a></li>
+<li><a class="dropdown-item" href="feestructure.php"> Fee Structure </a></li>
+                        <li><a class="dropdown-item" href="#"> Admission Procedure &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="ugadmissionproc.php">UG Admission</a></li>
+                                <li><a class="dropdown-item" href="pgadmissionproc.php">PG Admission</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="admissionanalysis.php"> Admission Analysis </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Departments </a>
+                    <ul class="dropdown-menu">
+                        <!-- <li><a class="dropdown-item" href="#"> CSE &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                
+                            </ul>
+                        </li> -->
+                        <li><a class="dropdown-item" href="cseabout.php">CSE</a></li>
+                        <li><a class="dropdown-item" href="aimlabout.php">AI & ML</a></li>
+                        <li><a class="dropdown-item" href="csedsabout.php">CSE-Data Science</a></li>
+                        <li><a class="dropdown-item" href="csebsabout.php">CSE-Business Systems</a></li>
+                        <li><a class="dropdown-item" href="csecsabout.php">CSE-Cyber Security</a></li>
+                        <li><a class="dropdown-item" href="cseaidsabout.php">AI&DS</a></li>
+                        <li><a class="dropdown-item" href="civilabout.php"> Civil </a></li>
+                        <li><a class="dropdown-item" href="eceabout.php"> ECE </a></li>
+                        <li><a class="dropdown-item" href="eeeabout.php"> EEE </a></li>
+                        <li><a class="dropdown-item" href="itabout.php"> IT </a></li>
+                        <li><a class="dropdown-item" href="mechabout.php">Mechanical </a></li>
+
+                        <li><a class="dropdown-item" href="roboticsabout.php"> Robotics </a></li>
+                        <li><a class="dropdown-item" href="mbaabout.php"> MBA </a></li>
+                        <li><a class="dropdown-item" href="mcaabout.php"> MCA </a></li>
+                        <li><a class="dropdown-item" href="shabout.php"> S&H </a></li>
+                        <li><a class="dropdown-item" href="bcaabout.php"> BCA </a></li>
+                        <li><a class="dropdown-item" href="bbaabout.php"> BBA </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Research & Development </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="aboutresearch.php"> About R&D </a></li>
+                        <li><a class="dropdown-item" href="sponsoredresearch.php"> Sponsored Research </a></li>
+                        <li><a class="dropdown-item" href="researchcunsultancy.php"> Consultancy and Training Services </a></li>
+                        <li><a class="dropdown-item" href="researchpublications.php"> Publications </a></li>
+                        <li><a class="dropdown-item" href="#"> Academic Research and Research Facilities &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="cseresearch.php">CSE</a></li>
+                                <li><a class="dropdown-item" href="mechanicalresearch.php">Mechanical</a></li>
+                                <li><a class="dropdown-item" href="eceresearch.php">ECE</a></li>
+                                <li><a class="dropdown-item" href="eeeresearch.php">EEE</a></li>
+                                <li><a class="dropdown-item" href="civilresearch.php">Civil</a></li>
+                                <li><a class="dropdown-item" href="mbaresearch.php">MBA</a></li>
+                                <li><a class="dropdown-item" href="mcaresearch.php">MCA</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="researchpatents.php"> Patents</a></li>
+                        <li><a class="dropdown-item" href="researchcollabrartions.php"> Collaborations and MoUs </a></li>
+                        <li><a class="dropdown-item" href="researchpromotionpolicy.php"> Policy for Promotion of Research </a></li>
+                        <li><a class="dropdown-item" href="researchrevenuepolicy.php"> Policy on Revenue Sharing </a></li>
+                        <li><a class="dropdown-item" href="researchcentralfacility.php"> Central Facility </a></li>
+                        <li><a class="dropdown-item" href="researchstatisticaldatabase.php"> Research/Statistical Database </a></li>
+                        <li><a class="dropdown-item" href="#"> Nanotechnology Research Center &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="researchaboutnanotechnologyresearchcenter.php">About Nanotechnology Research
+                                        Center</a></li>
+                                <li><a class="dropdown-item" href="researchfacultyincentives.php">Service Charges of Facilities</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="researchstartup.php"> Start-Up </a></li>
+                        <li><a class="dropdown-item" href="researchstateofethics.php"> State code of Ethics </a></li>
+                        <li><a class="dropdown-item" href="researchvideo.php"> Nanotechnology Research Center-video</a></li>
+                        <li><a class="dropdown-item" href="researchfacultyincentives.php"> Faculty Research Incentives</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Placements </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="placementsabout.php"> About </a></li>
+                        <li><a class="dropdown-item" href="placementsmission.php"> Mission </a></li>
+                        <li><a class="dropdown-item" href="placementsfacilities.php"> Facilities </a></li>
+                        <!--<li><a class="dropdown-item" href="placementsrecruiters.php"> Recruiters </a></li>-->
+ 			<li><a class="dropdown-item" href="placements_yearwise.php"> Placement Status </a></li>
+                      
+                        <li><a class="dropdown-item" href="placementstraining.php"> Training </a></li>
+                        <li><a class="dropdown-item" href="placementsgallery.php"> Gallery </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Library </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="aboutlibrary.php"> About Library </a></li>
+                        <li><a class="dropdown-item" href="libraryinfrastructure.php"> Infrastructure </a></li>
+                        <li><a class="dropdown-item" href="libraryworkinghours.php"> Working Hours </a></li>
+                        <li><a class="dropdown-item" href="libraryrulesreg.php"> Library Rules&Regulations </a></li>
+                        <li><a class="dropdown-item" href="librarystaff.php"> Library Staff </a></li>
+                        <li><a class="dropdown-item" href="librarydigital.php"> Digital Library </a></li>
+                        <li><a class="dropdown-item" href="#"> Journal &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="libraryprintjournals.php">Print Journals List</a></li>
+                                <li><a class="dropdown-item" href="libraryboundedjournals.php">Bound volumes of Journals</a></li>
+                                <li><a class="dropdown-item" href="libraryejournals.php">E-Journals</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="librarycdlist.php"> List of CD's </a></li>
+                        <li><a class="dropdown-item" href="#"> Book &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+				<li><a class="dropdown-item" href="librarybooks.php">Books </a></li>
+                                <li><a class="dropdown-item" href="librarynewarrivals.php">New Arrivals</a></li>
+                                <li><a class="dropdown-item" href="libraryrarebooks.php">Rare Books</a></li>
+                                <li><a class="dropdown-item" href="libraryebooks.php">E-Books</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="libraryvideogallery.php"> Video Gallery </a></li>
+                        <li><a class="dropdown-item" href="http://portal.swarnandhra.ac.in:5000/" target="_blank"> Previous year Question Papers Autonomous </a>
+                        </li>
+                        <li><a class="dropdown-item" href="#">E Subscriptions Access Links</a>
+                           <ul class="submenu submenu-left dropdown-menu">
+  			  <li><a class="dropdown-item" href="https://ieeexplore.ieee.org/Xplore/home.jsp" target="_blank">IEEE Xplore</a></li>
+   			 <li><a class="dropdown-item" href="https://link.springer.com" target="_blank">Springer Link</a></li>
+    			<li><a class="dropdown-item" href="https://www.jgateplus.com" target="_blank">J-Gate Plus</a></li>
+    			<li><a class="dropdown-item" href="http://delnet.in/index.html" target="_blank">DELNET</a></li>
+   			 <li><a class="dropdown-item" href="https://nlist.inflibnet.ac.in/" target="_blank">N-List</a></li>
+   			 <li><a class="dropdown-item" href="https://ndl.iitkgp.ac.in" target="_blank">NDL</a></li>
+			</ul>
+                        </li>
+                        <!-- <li><a class="dropdown-item" href="/e-lib"> E-Library[Intranet] </a></li> -->
+                        <li><a class="dropdown-item" href="data/librarybooksreform.pdf"> Books Requisition Form </a></li>
+                        <li><a class="dropdown-item" href="data/libfeedbackform.pdf"> FeedBack Form </a></li>
+                        
+                        <li><a class="dropdown-item" href="https://www.grammarly.com/plagiarism-checker" target="_blank"> Plagiarism Software </a></li>
+                        <!-- <li><a class="dropdown-item" href="/photogallery"> Photo Gallery </a></li> -->
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Staff </a>
+                    <ul class="dropdown-menu">
+                        <!-- <li><a class="dropdown-item" href="#"> Teaching Staff &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="csestaff.php">CSE</a></li>
+                                <li><a class="dropdown-item" href="aimlstaff.php">AI&ML </a></li>
+                                <li><a class="dropdown-item" href="civilstaff.php">Civil</a></li>
+                                <li><a class="dropdown-item" href="ecestaff.php">ECE</a></li>
+                                <li><a class="dropdown-item" href="eeestaff.php">EEE</a></li>
+                                <li><a class="dropdown-item" href="itstaff.php">IT</a></li>
+                                <li><a class="dropdown-item" href="mechstaff.php">Mechanical</a></li>
+                                <li><a class="dropdown-item" href="roboticsstaff.php">Robotics</a></li>
+                                <li><a class="dropdown-item" href="mbastaff.php">MBA</a></li>
+                                <li><a class="dropdown-item" href="mcastaff.php">MCA</a></li>
+                                <li><a class="dropdown-item" href="shstaff.php">S&H </a></li>
+                                <li><a class="dropdown-item" href="csecsstaff.php">CSE-CS</a></li>
+                                <li><a class="dropdown-item" href="csebsstaff.php">CSE-BS </a></li>
+                                <li><a class="dropdown-item" href="csedsstaff.php">CSE-DS </a></li>
+                                <li><a class="dropdown-item" href="cseaidsstaff.php">CSE-AI&DS </a></li>
+
+
+                            </ul>
+                        </li> -->
+                                                <li><a class="dropdown-item" href="teachingstaff.php"> Teaching Staff </a></li>
+
+                        <li><a class="dropdown-item" href="nonteachingstaff.php"> Non-Teaching Staff </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white   dropdown-toggle" href="#" data-bs-toggle="dropdown"> Facilities </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="atm.php"> ATM </a></li>
+                        <li><a class="dropdown-item" href="cafeteria.php"> Cafeteria </a></li>
+                        <li><a class="dropdown-item" href="wifi.php"> WIFI </a></li>
+                        <li><a class="dropdown-item" href="mediacentre.php"> Media Centre </a></li>
+                        <li><a class="dropdown-item" href="commonrooms.php"> Common Rooms </a></li>
+                        <li><a class="dropdown-item" href="smartclassrooms.php"> ICT Enabled/Smart Classrooms </a></li>
+                        <li><a class="dropdown-item" href="greeninitiatives.php"> Green Initiatives </a></li>
+                        <li><a class="dropdown-item" href="games.php"> Games and Sports </a></li>
+                        <li><a class="dropdown-item" href="languagelabs.php"> Language Laboraties </a></li>
+                        
+                        <li><a class="dropdown-item" href="waterplant.php"> RO Water Plant </a></li>
+                        <li><a class="dropdown-item" href="solarplant.php"> Solar Power Plant </a></li>
+                        <li><a class="dropdown-item" href="medicalfacility.php"> Medical Facility </a></li>
+                        <li><a class="dropdown-item" href="hostel.php"> Hostel </a></li>
+                        <li><a class="dropdown-item" href="#"> Transport &raquo; </a>
+                            <ul class="submenu dropdown-menu">
+                                <li><a class="dropdown-item" href="busroutes.php">Details of the routes of the 1st year
+                                        student Exclusive College Buses</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="#"> Safety Measures &raquo; </a>
+                            <ul class="submenu submenu-left dropdown-menu">
+                                <li><a class="dropdown-item" href="firesafety.php">Fire safety</a></li>
+                                <li><a class="dropdown-item" href="earthing.php">Earthing</a></li>
+                                <li><a class="dropdown-item" href="drivesafely.php">DRIVE SAFELY</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-white    dropdown-toggle" href="#" data-bs-toggle="dropdown"> Student Support </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a class="dropdown-item" href="#">Clubs & Chapters &raquo; </a>
+                            <ul class="submenu submenu-left dropdown-menu">
+                                <li><a class="dropdown-item" href="ieichapter.php">IEI Student Chapter</a></li>
+
+                                <li><a class="dropdown-item" href="ieeestudentchapter.php">IEEE Student Chapter</a></li>
+                                <li><a class="dropdown-item" href="ieeestudentbranch.php">IEEE Student Branch</a></li>
+                                <li><a class="dropdown-item" href="ietchapter.php">IET Chapter</a></li>
+                                <li><a class="dropdown-item" href="istestudent.php">ISTE Student Chapter</a></li>
+                                <li><a class="dropdown-item" href="eeeassociation.php">EEE Association</a></li>
+                                <li><a class="dropdown-item" href="civilassociation.php">Civil Association</a></li>
+                                <li><a class="dropdown-item" href="mcaassociation.php">MCA Association</a></li>
+                                <li><a class="dropdown-item" href="mathsclub.php">Maths Club</a></li>
+                                <li><a class="dropdown-item" href="ensavclub.php">Ensav Club</a></li>
+                                <li><a class="dropdown-item" href="sossc/">SOSSC Club</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="dropdown-item" href="professionalchapters.php" style='white-space: normal !important;'> Professional societies </a></li>
+                        <li><a class="dropdown-item" href="#">Extra-Curricular &raquo; </a>
+                            <ul class="submenu submenu-left dropdown-menu">
+                                <li><a class="dropdown-item" href="photographyclub.php">Photography Club</a></li>
+                                <li><a class="dropdown-item" href="sportsgames.php">Sports and Games</a></li>
+                                <li><a class="dropdown-item" href="nss.php">NSS</a></li>
+                                 <li><a class="dropdown-item" href="ncc.php">NCC</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div> <!-- navbar-collapse.// -->
+    </div><!-- container -->
+</nav>
+
+
+<!-- large device navigation ends -->
+    <div class="color-line-section">
+
+        <div class="image-line-innerpage-common">
+        </div>
+    </div>
+
+    <!--  banner section starts-->
+    <div class="conatiner-fluid">
+        <!--banner img section-->
+        <!--<img class="img-fluid banner-img mt-md-0" src="img/banner_section/main-image.jpg" alt="swarandhra main banner image">-->
+    </div>
+    <!--  banner section ends-->
+
+    <!-- inner page content begins here -->
+
+    <section class="content" style="padding-top:10px;">
+        <div class="container-fluid">
+            <div class="row row-eq-height">
+                <div class="col-xl-9 col-md-12">
+                    <div class="card" style="width: 100%;">
+                        <div class="card-body">
+			    <div class="card-header bg-light display-5 text-dark">
+		                   Bus Routes Map View
+                	    </div>
+	                    <div class="card-body">
+	                	   <div id="map" class="map"></div>
+        		    </div>
+                            </div>
+                        </div>
+                    </div>
+<div class="col-xl-3 col-lg-12">
+    <div>
+        <div align="Centre">
+            <h4>Quick Links</h4>
+        </div>
+
+        <div id="MainMenu">
+            <div class="list-group panel" id="sidebar">
+					<a href="ipr.php" target="_self" class="list-group-item "
+                    data-parent="#MainMenu">IPR Details</a>
+                <a href="https://mail.google.com/a/swarnandhra.ac.in" target="_blank" class="list-group-item "
+                    data-parent="#MainMenu">Web Mail</a>
+                <a href="https://swarnandhra.directverify.in/" target="_blank" class="list-group-item "
+                    data-parent="#MainMenu">For Student Verification</a>
+<a href="https://swarnandhra.ac.in/campusattendance/" target="_blank" class="list-group-item "
+                    data-parent="#MainMenu">SCET Attendance Portal</a>
+
+ <!-- <a href="https://swarnandhra.ac.in/scetpolytecnic/campusattendance/" target="_blank" class="list-group-item "
+                    data-parent="#MainMenu">Polytechnic Attendance Portal</a> -->
+ <a href="https://swarnandhra.ac.in/swrnfirstyear/campusattendance/" target="_blank" class="list-group-item "
+                    data-parent="#MainMenu">First Year Attendance Portal</a>
+
+
+
+                
+                
+
+
+
+
+            </div>
+        </div>
+
+
+
+    </div>    <!-- end of Quick Links -->
+</div>            </div>
+        </div>
+    </section>
+
+    <!-- color line section -->
+<div class="color-line-section">
+    <div class="color-line-yellow"></div>
+    <div class="color-line-red"></div>
+	
+</div>
+<!--footer section starts-->
+
+<footer class="footer-secion py-5">
+    <div class="container">
+        <div class="row">
+            <!--column one in footer-->
+            <div class="col-12 col-md-3">
+                <div class="footer-logo">
+                    <img class="img-fluid" src="img/footer/swarnandhra-logo-C.png" alt="swarandhra footer logo">
+                </div>
+                <div class="footer-mini-logo mx-auto d-block">
+                    <!-- <img class="img-fluid" src="img/footer/nba-logo-white.png" alt="nba logo">
+                    <img class="img-fluid" src="img/footer/jntuk-logo-White.png" alt="jntuk logo image">
+                    <img class="img-fluid" src="img/footer/naac-a_grade-logo-B_W.png" alt="naac A grade logo">
+                
+                -->
+
+<img class="img-fluid" src="img/data/icon2-min.png" alt="" >
+<img class="img-fluid" src="img/data/icon3-min.png" alt="">
+ <img class="img-fluid" src="img/data/iic.jpeg" alt="" >
+ <img class="img-fluid" src="img/data/ariia.jpeg" alt="" >
+                </div>
+                <div class="contact-us-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>
+                            <img class="img-fluid" src="img/footer/email-icon.svg" alt="swarandhra email">
+                            <a href="mailto:info@swarnandhra.ac.in">info@swarnandhra.ac.in</a>
+                        </li>
+                        <li>
+                            <img class="img-fluid" src="img/footer/phone-icon.svg" alt="swarandhra phone number">
+                            <a href="tel:9346610099">9346610099, 7989106066</a>
+                        </li>
+                        <li class="d-flex">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <ul class="contact-address">
+                                <li>Seetharampuram,</li>
+                                <li>Narasapur, </li>
+                                <li>Andhra Pradesh 534280,</li>
+                                <li>India.</li>
+                            </ul>
+                        </li>
+                        <li class="d-flex">
+                        <iframe
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4310.4962965140185!2d81.65576831510852!3d16.418586734340934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a37d707cf0d34a5%3A0xab73194f64b31016!2sSwarnandhra%20College%20of%20Engineering%20and%20Technology(autonomous)!5e1!3m2!1sen!2sin!4v1618289744634!5m2!1sen!2sin"
+                                        width="100%" height="200" style="border:0;" allowfullscreen=""
+                                        loading="lazy"></iframe>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <!--coloumn two in footer-->
+            <div class="col-12 col-md-8">
+                <section class="footer-right-top-section d-flex">
+                    <div class="footer-top-right-img">
+                        <img class="img-fluid mr-md-5" src="img/footer/anti-ragging-symbol.png"
+                            alt="anti ragging in swaran">
+                    </div>
+                    <div class="footer-top-right-text">
+                        <div class="d-flex">
+                            <h3>ANTI RAGGING POLICY</h3>
+                            <img src="img/footer/link-symbol.svg" alt="ANTI RAGGING POLICY">
+                        </div>
+                        <p class="text-justify">Swarnandhra college of engineering and technology (AUTONOMOUS), in strict compliance with UGC
+                            Regulations on Curbing the Menace of Ragging in Higher Educational Institutions, 2009, AICTE
+                            Notification, 2009, Supreme Court directives, 2007 and Andhra Pradesh Prohibition of Ragging
+                            Act, 1997 as adopted by the State Govt. of Telangana, has decided to frame a Policy to
+                            Prohibit and Prevent Ragging Activities in its Campus. Ragging - A violation of Human
+                            Rights. ."</p>
+                    </div>
+                </section>
+                <section class="footer-right-bottom-section mt-md-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="footer-right-bottom-list">
+                                <h3>SCET UPADTES</h3>
+                                <ul>
+                                    <!--  <li>
+                                        <a href="aictefit.html" class="text-white">AICTE Fit India Challenge </a>
+                                    </li> -->
+
+                                    <li>
+                                        <a href="collegeview360.php" class="text-white">Virtual Tour / 360<sup>0</sup>
+                                            Campus View </a>
+                                    </li>
+                                    <li>
+                                        <a href="maintancepolicy.php" class="text-white">Maintance Policy</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.swarnandhra.ac.in/grievance_portal/" class="text-white">Grievance
+                                            Redressal Portal</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!" class="text-white" >ECampus-Portal for Staff</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!" class="text-white">ECampus-Portal for Students</a>
+                                    </li>
+
+
+
+                                    <li>
+                                        <a href="newsbulletin.php" class="text-white">News Letter </a>
+
+                                    </li>
+
+                                </ul>
+                                <h3 class="text-uppercase">ANTI RAGGING</h3>
+                                <ul>
+
+                                    <li>
+                                        <a href="antiragging.php" class="text-white">Anti-Ragging </a>
+
+                                    </li>
+                                    <li>
+                                        <a href="antiraggingcommittee.php" class="text-white">Anti-Ragging Committee
+                                        </a>
+
+                                    </li>
+                                    <li>
+                                        <a href="antiraggingsquad.php" class="text-white">Anti-Ragging Squad </a>
+
+                                    </li>
+                                    <li>
+                                        <a href="
+http://www.antiragging.in/affidavit_registration_disclaimer.html" class="text-white" target="_blank"> Antiragging
+                                            Undertaking</a>
+
+                                    </li>
+                                    <li>
+                                        <a href="http://www.antiragging.in/complaint_register_form.html"
+                                            class="text-white" target="_blank">Click Here to Lodge Complaint</a>
+
+                                    </li>
+
+
+
+
+                                </ul>
+								<h3 class="text-uppercase">Clubs & Chapters (Portals)</h3>
+                                <ul>
+
+                                    <li>
+                                        <a href="/sossc/" class="text-white">Swarnandhra Open Source Software Club (SOSSC)</a>
+
+                                    </li>
+                                  
+
+
+
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+                        <div class="col-4">
+                            <div class="footer-right-bottom-list">
+                                <h3>Useful Links</h3>
+                                <ul>
+
+                                    <li>
+                                        <a href="https://www.aicte-india.org/feedback/" class="text-white">AICTE
+                                            Feedback</a>
+                                    </li>
+                                    <li>
+                                        <a href="mandatorydisclosure.php" class="text-white">Mandatory Disclosure</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="https://swarnandhra.directverify.in/" class="text-white"
+                                            target="_blank">Students Online Certificate Verification</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://mail.google.com/a/swarnandhra.ac.in" class="text-white"
+                                            target="_blank">Web Mail</a>
+                                    </li>
+                                    <li>
+                                        <a href="newsmanagementportal/index.php" class="text-white"
+                                            target="_blank">News Admin</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="academiccouncil.php" class="text-white">Academic Council</a>
+                                    </li>
+                                    <li>
+                                        <a href="iqac.php" class="text-white">IQAC</a>
+                                    </li>
+                                    <li>
+                                        <a href="discipline.php" class="text-white">Discipline</a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https://www.jntuk.edu.in/" class="text-white" target="_blank">JNTUK
+                                            Kakinada</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.aicte-india.org/" class="text-white"
+                                            target="_blank">AICTE</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.nbaind.org/" class="text-white" target="_blank">NBA</a>
+                                    </li>
+                                    <li>
+                                        <a href="http://www.naac.gov.in/" class="text-white" target="_blank">NAAC</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.ugc.ac.in/" class="text-white" target="_blank">UGC</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://apeamcet.nic.in/" class="text-white" target="_blank">AP
+                                            EAMCET</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://spoken-tutorial.org/" class="text-white" target="_blank">SPOKEN
+                                            TUTORIALS</a>
+                                    </li>
+  <li>
+                                        <a href="spokentutorialcertificates.php" class="text-white" target="_blank">SPOKEN
+                                            TUTORIALS - Student Certificate Details</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="https://nptel.ac.in/" class="text-white" target="_blank">NPTEL (E-
+                                            Learning)</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.youth4work.com/" class="text-white" target="_blank">Youth
+                                            for Work [Online Skill Test]</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://swayam.gov.in/" class="text-white" target="_blank">SWAYAM</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.udacity.com/" class="text-white"
+                                            target="_blank">UDACITY</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.ncs.gov.in/" class="text-white" target="_blank">National
+                                            Career Service</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.netacad.com/" class="text-white" target="_blank">Cisco
+                                            Networking Academy</a>
+                                    </li>
+                                    <li>
+                                        <a href="https://infyspringboard.onwingspan.com/auth/realms/infyspringboard/protocol/openid-connect/auth?client_id=portal&redirect_uri=https%3A%2F%2Finfyspringboard.onwingspan.com%2Fweb%2Fen%2F&state=51acc1f5-bf87-4421-87c2-35c356a165d3&response_mode=fragment&response_type=code&scope=openid&nonce=28d94d05-5d99-4908-9d0f-b434697494aa" class="text-white" target="_blank">
+                                           Infosys SpringBoard</a>
+                                    </li>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                        <div class="col-4">
+                            <div class="footer-right-bottom-left-list">
+                                <h3 class="text-uppercase"></h3>
+                                <ul class="list-unstyled mb-0">
+                                <li>
+                                        <a href="https://lms.swarnandhra.edu.in/" class="text-white">Swarnandhra LMS</a>
+                                    </li>
+                                    <li>
+                                        <a href="aicteschemes.php" class="text-white">AICTE SCHEMES</a>
+                                    </li>
+
+                                    
+                                    <li>
+                                        <a href="collegeundertaking.php" class="text-white">Under Taking to UGC</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="auditreports.php" class="text-white">Audited Statements</a>
+                                    </li>
+                                    <li>
+                                        <a href="financecommittee.php" class="text-white">Finance Committee Meeting
+                                            Minutes</a>
+                                    </li>
+<li>
+                                           <p style="color: white;text-align: center;">Women Helpline Number 24x7 : <span style="color: white; font-size: 24px; text-align: center;">9849940898</span></p>
+                                    </li>
+
+                                    <!-- <li>
+                                        <a href="onlinefeepayment.html" class="text-white">Online Fee Payment</a>
+
+
+                                    </li> -->
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div class="footer-copyright text-center">
+<a href="https://api.whatsapp.com/send?phone=9346446880" class="whatsapp-button" target="_blank" rel="noopener noreferrer">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+    <p>Copyright © <a href="#">2023 Swarnandra</a>. All rights reserved. Developed By PND Publishers.</p>
+</div>
+
+
+<!--footer section ends-->   <script src="js/navbar.js"></script>
+<script src="js/cards.js"></script>
+
+<!--tabs script -->
+<script src="js/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <script>
+        $('.arrow-tabs a').click(function (e) {
+  e.preventDefault()
+  var selectedTab = $(this).parent();
+  var ul = selectedTab.parent();
+  ul.find("li").removeClass("ui-tabs-active ui-state-active ui-state-hover").attr("aria-selected",false);
+  selectedTab.addClass("ui-tabs-active ui-state-active").attr("aria-selected",true);
+  // show/hide content
+    var content = ul.parent().find(".contents .ui-tabs-panel");
+    content.hide(); 
+    ul.parent().find($(this).attr("href")).fadeIn(200);  
+})
+
+    </script>
+
+    <script>
+// Enhanced Startup Slider with Perfect Image Fitting
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = UIkit.modal('#startup-slider-modal');
+    
+    // Show modal after page load
+    setTimeout(() => {
+        modal.show();
+    }, 1000);
+    
+    // Auto close after 42 seconds (14 slides * 3 seconds each)
+    const autoCloseTimer = setTimeout(() => {
+        modal.hide();
+    }, 22000);
+    
+    // Clear timer if manually closed
+    UIkit.util.on('#startup-slider-modal', 'hidden', function () {
+        clearTimeout(autoCloseTimer);
+        console.log('Startup slider closed');
+    });
+    
+    // Handle video playback
+    const video = document.querySelector('.startup-video');
+    if (video) {
+        video.addEventListener('loadeddata', function() {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Video autoplay prevented:', error);
+                });
+            }
+        });
+        
+        // Pause video when modal closes
+        UIkit.util.on('#startup-slider-modal', 'hidden', function () {
+            video.pause();
+        });
+    }
+    
+    // Ensure proper image loading
+    const slides = document.querySelectorAll('.slide-bg');
+    slides.forEach(slide => {
+        const bgImage = slide.style.backgroundImage;
+        if (bgImage) {
+            const img = new Image();
+            img.onload = function() {
+                slide.style.opacity = '1';
+            };
+            img.src = bgImage.slice(4, -1).replace(/"/g, "");
+        }
+    });
+
+    // Add this to the existing JavaScript
+// Force image refresh on mobile
+if (window.innerWidth <= 768) {
+    const slides = document.querySelectorAll('.slide-bg');
+    slides.forEach(slide => {
+        const bgImage = slide.style.backgroundImage;
+        if (bgImage) {
+            // Force repaint on mobile
+            slide.style.transform = 'translateZ(0)';
+            slide.style.webkitTransform = 'translateZ(0)';
+        }
+    });
+}
+});
+</script>
+
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var collegeLat = 16.4197, collegeLng = 81.6596;
+    var map = L.map('map').setView([collegeLat, collegeLng], 11);
+
+    // Use Google Map tiles
+    L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      subdomains: ['mt0','mt1','mt2','mt3'],
+      attribution: 'Map data \u00a9 Google'
+    }).addTo(map);
+
+    // Load your GeoJSON file
+    omnivore.geojson('routes.geojson')
+      .on('ready', function() {
+          this.eachLayer(function(layer) {
+              // Optional: style each line based on properties in GeoJSON
+              layer.setStyle({ color: layer.feature.properties.color || 'blue', weight: 4 });
+
+              // Optional: popup with route info
+              layer.bindPopup(
+                  '<b>' + (layer.feature.properties.name || 'Route') + '</b><br>' +
+                  'Available Buses: ' + (layer.feature.properties.buses || 'N/A')
+              );
+          });
+
+          // Zoom map to fit all routes
+          map.fitBounds(this.getBounds());
+      })
+       .addTo(map);
+
+var nightRestPlaces = [ [17.4050,78.5067],[17.3650,78.4667],[17.4200,78.5000],[17.3700,78.4950],[17.3900,78.4750]
+    ];
+
+    nightRestPlaces.forEach(function(loc) {
+      L.marker(loc).addTo(map).bindPopup("Night Resting Place");
+    });
+});
+</script>
+
+</body>
+</html>

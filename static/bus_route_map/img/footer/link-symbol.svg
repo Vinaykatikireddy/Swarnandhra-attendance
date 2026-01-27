@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0.77;
+      }
+    </style>
+  </defs>
+  <g id="link-symbol" transform="translate(-1284 -1664)">
+    <path id="Subtraction_-_Link_Symbol" data-name="Subtraction - Link Symbol" class="cls-1" d="M8.5,17A8.5,8.5,0,0,1,2.49,2.49,8.5,8.5,0,1,1,14.51,14.51,8.444,8.444,0,0,1,8.5,17ZM11.488,3.284,5.386,6.9,7.727,8.251,4.637,13.605l1.339.773L9.066,9.024l2.342,1.352Z" transform="translate(1284 1664)"/>
+  </g>
+</svg>

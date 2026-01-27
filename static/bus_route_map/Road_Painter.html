@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Road Painter — Stable Build (Locked-to-one-road-type draw)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html,body,#map { height:100%; margin:0; padding:0; }
+    .controls {
+      position:absolute; left:10px; top:10px; z-index:3000;
+      background:rgba(255,255,255,0.96); padding:10px; border-radius:10px;
+      box-shadow:0 6px 24px rgba(0,0,0,0.12); font-family:system-ui,Segoe UI,Roboto,Arial; font-size:13px; width:340px;
+    }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .btn { padding:6px 10px; border-radius:8px; cursor:pointer; border:1px solid #d0d6db; background:#f7f8fa; }
+    .btn.active { background:#2b8cff; color:white; border-color:#1a6ed8; }
+    .btn:disabled { opacity:0.5; cursor:not-allowed; }
+    label { display:block; margin:8px 0 4px; }
+    select, input[type="range"], input[type="color"] { width:100%; box-sizing:border-box; }
+    .hint { color:#666; font-size:12px; margin-top:6px; display:block; }
+    .leaflet-container.crosshair { cursor:crosshair !important; }
+    #brushPreview { position:absolute; pointer-events:none; z-index:3500; border-radius:50%; transform:translate(-50%,-50%); display:none; box-shadow:0 0 0 2px rgba(0,0,0,0.06); }
+    .status { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-top:6px; }
+    .small { font-size:11px; color:#666; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="controls" id="controls">
+    <div class="row" style="margin-bottom:6px;">
+      <button id="drawBtn" class="btn">✏️ Draw (D)</button>
+      <button id="eraserBtn" class="btn">🧽 Erase (E)</button>
+      <button id="undoBtn" class="btn">↶ Undo</button>
+      <button id="clearBtn" class="btn">🧹 Clear</button>
+      <button id="exportBtn" class="btn">⬇️ Export</button>
+      <button id="importBtn" class="btn">⬆️ Import</button>
+      <input type="file" id="importFile" accept=".geojson" style="display:none;" />
+    </div>
+
+    <label>Base layer</label>
+    <select id="baseSelect">
+      <option value="google">Google Hybrid (mt)</option>
+      <option value="osm">OpenStreetMap (light)</option>
+    </select>
+
+    <label>Brush size (meters): <span id="sizeLabel">20</span></label>
+    <input id="brushSize" type="range" min="5" max="200" value="20" />
+
+    <label>Color</label>
+    <input id="brushColor" type="color" value="#ff0000" />
+
+    <div class="status">
+      <span class="hint" id="hint">Zoom ≥13 to load roads. Hold mouse to paint.</span>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span class="small" id="loadedCount">Segments: 0</span>
+        <span class="small" id="activeType" title="Active locked road type"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="brushPreview"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/rbush@3.0.1/rbush.js"></script>
+
+  <script>
+  /*************************************************************
+   * Stable Road Painter — persistent paintedLayer version
+   * Modified so Draw/Eraser locks to the road 'highway' type
+   * detected at stroke start (holds until pointerup).
+   *************************************************************/
+
+  const map = L.map('map', { preferCanvas: true }).setView([16.4196, 81.6596], 13);
+  const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' });
+  const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { subdomains:['mt0','mt1','mt2','mt3'], attribution:'Map data © Google' });
+  googleHybrid.addTo(map);
+
+  const canvasRenderer = L.canvas({ padding:0 });
+  const roadsLayer = L.layerGroup().addTo(map);      // fetched base segments
+  const paintedLayer = L.layerGroup().addTo(map);   // persistent painted features (always visible)
+
+  const tree = new RBush();
+  const idToLayer = new Map();        // segmentId -> base layer polyline (when loaded)
+  const paintedCache = new Map();     // segmentId -> { painted, color, weight } (persisted)
+  const paintedLayerMap = new Map();  // segmentId -> persistent painted polyline (in paintedLayer) for easy removal
+  const HISTORY_LIMIT = 200;
+  const history = [];
+
+  let drawMode = false, eraseMode = false;
+  let isPointerDown = false;
+  let brushSize = 20, brushColor = '#ff0000';
+  let changingBrush = false;
+  let currentStroke = null;
+  let lastPaintTime = 0;
+  const paintThrottleMs = 25;
+
+  // NEW: lock to one road type per pointer-down
+  let activeRoadType = null;
+
+  let currentFetchController = null;
+  const MAX_BBOX_DEG = 0.12;
+  const MAX_INDEXED_SEGMENTS = 4000;
+
+  const drawBtn = document.getElementById('drawBtn');
+  const eraserBtn = document.getElementById('eraserBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFile = document.getElementById('importFile');
+  const sizeLabel = document.getElementById('sizeLabel');
+  const brushPreview = document.getElementById('brushPreview');
+  const baseSelect = document.getElementById('baseSelect');
+  const hint = document.getElementById('hint');
+  const loadedCount = document.getElementById('loadedCount');
+  const activeTypeLabel = document.getElementById('activeType');
+
+  drawBtn.onclick = toggleDraw;
+  eraserBtn.onclick = toggleEraser;
+  undoBtn.onclick = undo;
+  clearBtn.onclick = clearPaintings;
+  exportBtn.onclick = downloadGeoJSON;
+  importBtn.onclick = () => importFile.click();
+  undoBtn.disabled = true;
+
+  importFile.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    try {
+      const geojson = JSON.parse(text);
+      importPaintedGeoJSON(geojson);
+    } catch(err) {
+      alert('Invalid GeoJSON file.');
+      console.error(err);
+    }
+    importFile.value = '';
+  });
+
+  document.getElementById('brushSize').addEventListener('input', e => {
+    changingBrush = true;
+    brushSize = +e.target.value;
+    sizeLabel.textContent = brushSize;
+    updateBrushPreview();
+  });
+  document.getElementById('brushSize').addEventListener('change', () => changingBrush = false);
+  document.getElementById('brushColor').addEventListener('input', e => { brushColor = e.target.value; updateBrushPreview(); });
+
+  baseSelect.addEventListener('change', e=>{
+    if (e.target.value === 'osm') { map.removeLayer(googleHybrid); osmLayer.addTo(map); }
+    else { map.removeLayer(osmLayer); googleHybrid.addTo(map); }
+  });
+
+  window.addEventListener('keydown', e=>{
+    if (e.key.toLowerCase() === 'd') toggleDraw();
+    if (e.key.toLowerCase() === 'e') toggleEraser();
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+  });
+
+  function toggleDraw(){
+    drawMode = !drawMode; eraseMode = false;
+    drawBtn.classList.toggle('active', drawMode);
+    eraserBtn.classList.remove('active');
+    map.getContainer().classList.toggle('crosshair', drawMode || eraseMode);
+    brushPreview.style.display = (drawMode || eraseMode) ? 'block' : 'none';
+    updateBrushPreview(); updateHint();
+  }
+  function toggleEraser(){
+    eraseMode = !eraseMode; drawMode = false;
+    eraserBtn.classList.toggle('active', eraseMode);
+    drawBtn.classList.remove('active');
+    map.getContainer().classList.toggle('crosshair', drawMode || eraseMode);
+    brushPreview.style.display = (drawMode || eraseMode) ? 'block' : 'none';
+    updateBrushPreview(); updateHint();
+  }
+  function updateHint(){
+    if (drawMode || eraseMode) {
+      if (map.getZoom() < 13) { hint.textContent = 'Zoom in (≥13) to paint/erase roads.'; hint.style.color = '#d9534f'; }
+      else { hint.textContent = 'Hold primary mouse (or touch) to paint/erase. Ctrl/Cmd+Z to undo.'; hint.style.color = '#666'; }
+    } else { hint.textContent = 'Zoom ≥13 to load roads. Hold primary mouse to paint.'; hint.style.color = '#666'; }
+  }
+
+  function updateBrushPreview(){
+    if (eraseMode) {
+      brushPreview.style.width = '18px'; brushPreview.style.height = '18px';
+      brushPreview.style.background = '#fff'; brushPreview.style.border = '2px solid #222'; brushPreview.style.opacity = '0.85';
+    } else {
+      const px = Math.max(8, Math.round((brushSize / 200) * 120));
+      brushPreview.style.width = px + 'px'; brushPreview.style.height = px + 'px';
+      brushPreview.style.background = brushColor; brushPreview.style.opacity = 0.32;
+      brushPreview.style.border = `2px solid ${brushColor}`;
+    }
+  }
+  updateBrushPreview();
+
+  const container = map.getContainer();
+
+  // Helper: choose the closest segment from a list to the latlng
+  function pickClosestSegment(segs, latlng){
+    if (!segs || segs.length === 0) return null;
+    const mousePoint = map.latLngToContainerPoint(latlng);
+    let best = null, bestDist = Infinity;
+    for (const seg of segs) {
+      const pts = seg.getLatLngs();
+      // segment is a line between pts[0] and pts[1]
+      const p1 = map.latLngToContainerPoint(pts[0]);
+      const p2 = map.latLngToContainerPoint(pts[1]);
+      const distPix = L.LineUtil.pointToSegmentDistance(mousePoint, p1, p2);
+      const mPerPix = map.distance(latlng, map.containerPointToLatLng(L.point(mousePoint.x + 1, mousePoint.y)));
+      const distMeters = distPix * mPerPix;
+      if (distMeters < bestDist) { bestDist = distMeters; best = seg; }
+    }
+    return best;
+  }
+
+  container.addEventListener('pointerdown', e=>{
+    if (!e.isPrimary) return;
+    if (!(drawMode || eraseMode) || map.getZoom() < 13) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    isPointerDown = true;
+    currentStroke = { type: drawMode ? 'paint' : 'erase', changes: new Map() }; // map keyed by seg id or synthetic key
+
+    // Detect the first road type under cursor and lock to it
+    const rect = container.getBoundingClientRect();
+    const point = L.point(e.clientX - rect.left, e.clientY - rect.top);
+    const latlng = map.containerPointToLatLng(point);
+    const segs = segmentsWithinBrushLatLng(latlng);
+    const closest = pickClosestSegment(segs, latlng);
+    if (closest && closest.feature && closest.feature.properties) {
+      activeRoadType = closest.feature.properties.highway || null;
+    } else {
+      activeRoadType = null;
+    }
+    // show active type in label
+    if (activeRoadType) {
+      activeTypeLabel.textContent = (drawMode ? 'Painting: ' : 'Erasing: ') + activeRoadType;
+    } else {
+      activeTypeLabel.textContent = (drawMode ? 'Painting: any' : 'Erasing: any');
+    }
+
+    map.dragging.disable();
+    e.preventDefault();
+  });
+
+  container.addEventListener('pointerup', () => {
+    if (isPointerDown && currentStroke) {
+      const changesArray = Array.from(currentStroke.changes.values()).map(v => v); // values already structured
+      if (changesArray.length) pushHistory({ type: currentStroke.type, changes: changesArray });
+    }
+    isPointerDown = false; currentStroke = null; map.dragging.enable();
+    // reset road type lock
+    activeRoadType = null;
+    activeTypeLabel.textContent = '';
+  });
+  container.addEventListener('pointercancel', () => { isPointerDown = false; currentStroke = null; map.dragging.enable(); activeRoadType = null; activeTypeLabel.textContent = ''; });
+
+  container.addEventListener('pointermove', e=>{
+    brushPreview.style.left = e.clientX + 'px';
+    brushPreview.style.top = e.clientY + 'px';
+    if (!(drawMode || eraseMode)) return;
+    if (!isPointerDown || changingBrush || map.getZoom() < 13) return;
+    const now = Date.now();
+    if (now - lastPaintTime < paintThrottleMs) return;
+    lastPaintTime = now;
+    const rect = container.getBoundingClientRect();
+    const point = L.point(e.clientX - rect.left, e.clientY - rect.top);
+    const latlng = map.containerPointToLatLng(point);
+    paintAt(latlng);
+  });
+  container.addEventListener('contextmenu', e => { if ((drawMode || eraseMode) && e.isTrusted) e.preventDefault(); });
+
+  const metersToLatDeg = m => m / 111320.0;
+  const metersToLonDeg = (m, lat) => m / (111320.0 * Math.cos(lat * Math.PI / 180));
+
+  function indexSegment(layer, id) {
+    const pts = layer.getLatLngs();
+    const lats = pts.map(p => p.lat), lngs = pts.map(p => p.lng);
+    tree.insert({ minX: Math.min(...lngs), minY: Math.min(...lats), maxX: Math.max(...lngs), maxY: Math.max(...lats), id, layer });
+    idToLayer.set(id, layer);
+  }
+  function clearIndex() { tree.clear(); idToLayer.clear(); }
+
+  function segmentsWithinBrushLatLng(latlng) {
+    const lat = latlng.lat;
+    const latDelta = metersToLatDeg(brushSize);
+    const lonDelta = metersToLonDeg(brushSize, lat);
+    const minLat = lat - latDelta, maxLat = lat + latDelta;
+    const minLon = latlng.lng - lonDelta, maxLon = latlng.lng + lonDelta;
+    const candidates = tree.search({ minX: minLon, minY: minLat, maxX: maxLon, maxY: maxLat });
+    const mousePoint = map.latLngToContainerPoint(latlng);
+    const result = [];
+    const hitToleranceMeters = Math.max(brushSize, 8);
+    for (const c of candidates) {
+      const pts = c.layer.getLatLngs();
+      const p1 = map.latLngToContainerPoint(pts[0]);
+      const p2 = map.latLngToContainerPoint(pts[1]);
+      const distPix = L.LineUtil.pointToSegmentDistance(mousePoint, p1, p2);
+      const mPerPix = map.distance(latlng, map.containerPointToLatLng(L.point(mousePoint.x + 1, mousePoint.y)));
+      const distMeters = distPix * mPerPix;
+      if (distMeters <= hitToleranceMeters) result.push(c.layer);
+    }
+    return result;
+  }
+
+  // helper: create persistent painted polyline for a base segment or raw coords
+  function createPersistentPaint(coordsLatLngs, color, weight, segmentId = null) {
+    const paintPoly = L.polyline(coordsLatLngs, {
+      color,
+      weight,
+      opacity: 0.95,
+      renderer: canvasRenderer,
+      interactive: false
+    });
+    paintedLayer.addLayer(paintPoly);
+    if (segmentId) paintedLayerMap.set(segmentId, paintPoly);
+    return paintPoly;
+  }
+
+  function removePersistentPaintForId(id) {
+    const p = paintedLayerMap.get(id);
+    if (p) {
+      paintedLayer.removeLayer(p);
+      paintedLayerMap.delete(id);
+    } else {
+      // fallback: try to remove by matching coords (rare)
+      let found = null;
+      paintedLayer.eachLayer(l => {
+        if (found) return;
+      });
+      if (found) paintedLayer.removeLayer(found);
+    }
+  }
+
+  // painting logic: paint base segment style, update paintedCache, add persistent polyline
+  function paintAt(latlng) {
+    const segs = segmentsWithinBrushLatLng(latlng);
+    for (const seg of segs) {
+      const roadType = seg.feature?.properties?.highway || null;
+      // NEW: if an active road type lock exists, skip segments that don't match it
+      if (activeRoadType && roadType !== activeRoadType) continue;
+
+      const id = seg._rp_id;
+      const prev = {
+        painted: !!seg.feature?.properties?.painted,
+        color: seg.feature?.properties?.color || null,
+        weight: seg.options?.weight || 2
+      };
+      const newWeight = Math.max(3, Math.round(brushSize / 8));
+      if (drawMode) {
+        if (prev.painted && prev.color === brushColor) continue;
+        // style base segment
+        seg.setStyle({ color: brushColor, weight: newWeight, renderer: canvasRenderer });
+        seg.feature = seg.feature || {}; seg.feature.properties = { ...(seg.feature.properties || {}), painted: true, color: brushColor };
+        paintedCache.set(id, { painted: true, color: brushColor, weight: newWeight });
+        // persistent copy (avoid duplicates)
+        if (!paintedLayerMap.has(id)) {
+          const coordsLatLngs = seg.getLatLngs().map(p => [p.lat, p.lng]); // for createPersistentPaint we want LatLng pairs
+          const ll = coordsLatLngs.map(pair => L.latLng(pair[0], pair[1]));
+          createPersistentPaint(ll, brushColor, newWeight, id);
+        }
+        if (currentStroke) currentStroke.changes.set(id, { id, prev, next: { painted: true, color: brushColor, weight: newWeight } });
+      } else if (eraseMode) {
+        if (!prev.painted) continue;
+        seg.setStyle({ color: '#888', weight: 2, renderer: canvasRenderer });
+        seg.feature = seg.feature || {}; seg.feature.properties = { ...(seg.feature.properties || {}), painted: false };
+        paintedCache.delete(id);
+        // remove persistent copy if exists
+        removePersistentPaintForId(id);
+        if (currentStroke) currentStroke.changes.set(id, { id, prev, next: { painted: false, color: null, weight: 2 } });
+      }
+    }
+  }
+
+  // Overpass fetching with safeguards — when segments are added, apply paintedCache and ensure persistent painted copy exists
+  let fetchTimeout = null;
+  function debounceFetch(){ if (fetchTimeout) clearTimeout(fetchTimeout); fetchTimeout = setTimeout(fetchRoads, 350); }
+
+  async function fetchRoads() {
+    if (map.getZoom() < 13) { roadsLayer.clearLayers(); clearIndex(); loadedCount.textContent = 'Segments: 0'; updateHint(); return; }
+    const b = map.getBounds();
+    const latSpan = Math.abs(b.getNorth() - b.getSouth());
+    const lonSpan = Math.abs(b.getEast() - b.getWest());
+    if (latSpan > MAX_BBOX_DEG || lonSpan > MAX_BBOX_DEG) {
+      hint.textContent = 'BBox too large — zoom in to load roads (prevents crashes).';
+      hint.style.color = '#d9534f';
+      return;
+    }
+    if (currentFetchController) try { currentFetchController.abort(); } catch(e){}
+    currentFetchController = new AbortController();
+    const signal = currentFetchController.signal;
+    const q = `[out:json][timeout:25];
+      (way["highway"~"^(motorway|trunk|primary|secondary|tertiary|residential|service)$"](${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}););
+      out geom;`;
+
+    try {
+      const res = await fetch('https://overpass-api.de/api/interpreter', { method:'POST', body:q, signal, headers:{'Content-Type':'text/plain'} });
+      if (!res.ok) throw new Error('Overpass returned ' + res.status);
+      const data = await res.json();
+      roadsLayer.clearLayers(); clearIndex();
+      let indexed = 0;
+      OUTER: for (const w of data.elements.filter(x => x.type==='way' && x.geometry?.length>=2)){
+        for (let j=0;j<w.geometry.length-1;j++){
+          if (indexed>=MAX_INDEXED_SEGMENTS) break OUTER;
+          const p1=w.geometry[j], p2=w.geometry[j+1];
+          if(p1.lat===p2.lat && p1.lon===p2.lon) continue;
+          const sid=`${w.id}-${j}`;
+          const seg = L.polyline([[p1.lat,p1.lon],[p2.lat,p2.lon]],{ color:'#888', weight:2, interactive:false, renderer:canvasRenderer });
+          seg._rp_id = sid;
+
+          // store highway tag on feature properties so we can lock by it
+          const highwayTag = (w.tags && w.tags.highway) ? w.tags.highway : null;
+
+          // apply paintedCache if present
+          if(paintedCache.has(sid)){
+            const p = paintedCache.get(sid);
+            seg.setStyle({ color:p.color, weight:p.weight, renderer:canvasRenderer });
+            seg.feature={properties:{osm_id:w.id, painted:!!p.painted, color:p.color, highway: highwayTag}};
+            // ensure persistent painted copy exists
+            if (!paintedLayerMap.has(sid) && p.painted) {
+              createPersistentPaint(seg.getLatLngs(), p.color, p.weight, sid);
+            }
+          } else {
+            seg.feature={properties:{osm_id:w.id, painted:false, highway: highwayTag}};
+          }
+          roadsLayer.addLayer(seg); indexSegment(seg,sid); indexed++;
+        }
+      }
+      loadedCount.textContent=`Segments: ${indexed}${indexed>=MAX_INDEXED_SEGMENTS?' (trimmed)':''}`;
+      hint.style.color='#666'; updateHint();
+    } catch(err) {
+      if(err.name!=='AbortError') { console.error(err); hint.textContent='Roads fetch failed — try again or zoom in.'; hint.style.color='#d9534f'; }
+    } finally { currentFetchController=null; }
+  }
+
+  map.on('moveend', debounceFetch);
+  map.on('zoomend', () => { debounceFetch(); updateHint(); });
+  fetchRoads();
+
+  function pushHistory(action){
+    if(!action||!action.changes||action.changes.length===0) return;
+    history.push(action); if(history.length>HISTORY_LIMIT) history.shift();
+    undoBtn.disabled=false;
+  }
+
+  function undo(){
+    if(!history.length){ undoBtn.disabled=true; return; }
+    const action = history.pop();
+    // revert changes in reverse order
+    for(let i=action.changes.length-1;i>=0;i--){
+      const ch = action.changes[i];
+      const { id, prev, next, synthetic } = ch;
+      if (id) {
+        // ID-based change (segment)
+        const baseLayer = idToLayer.get(id);
+        if (prev && prev.painted) {
+          // reapply painted style on base if present
+          if (baseLayer) {
+            baseLayer.setStyle({ color: prev.color || '#ff0000', weight: prev.weight || 3, renderer: canvasRenderer });
+            baseLayer.feature = baseLayer.feature || {}; baseLayer.feature.properties = { ...(baseLayer.feature.properties||{}), painted:true, color:prev.color };
+          }
+          paintedCache.set(id, { painted:true, color:prev.color, weight:prev.weight || 3 });
+          // ensure persistent painted copy exists
+          if (!paintedLayerMap.has(id)) {
+            if (baseLayer) createPersistentPaint(baseLayer.getLatLngs(), prev.color || '#ff0000', prev.weight || 3, id);
+            // if baseLayer not available, we leave cache only; when segment loads later fetchRoads will create persistent copy
+          }
+        } else {
+          // prev was unpainted -> remove paint
+          if (baseLayer) {
+            baseLayer.setStyle({ color:'#888', weight:2, renderer:canvasRenderer });
+            baseLayer.feature = baseLayer.feature || {}; baseLayer.feature.properties = { ...(baseLayer.feature.properties||{}), painted:false };
+          }
+          paintedCache.delete(id);
+          removePersistentPaintForId(id);
+        }
+      } else if (synthetic) {
+        // synthetic (imported raw polyline) stored as layer reference in ch.nextLayerId (we store its coords and color)
+        // For undoing an import: remove the persistent polyline that matches coords+color
+        const toRemove = [];
+        paintedLayer.eachLayer(l => {
+          const coords = l.getLatLngs().map(p => [p.lat, p.lng]);
+          if (JSON.stringify(coords) === JSON.stringify(ch.synthetic.coords) && (l.options.color === ch.synthetic.color)) {
+            toRemove.push(l);
+          }
+        });
+        for (const l of toRemove) paintedLayer.removeLayer(l);
+      }
+    }
+    undoBtn.disabled = history.length===0;
+  }
+
+  function clearPaintings(){
+    // push a clear action to history: capture current painted state so undo can revert (store as synthetic entries)
+    const changes = [];
+    // collect id-based painted items
+    for (const [id, layer] of idToLayer.entries()) {
+      const props = layer.feature?.properties;
+      if (props && props.painted) {
+        const prev = { painted:true, color:props.color||null, weight:layer.options?.weight||3 };
+        const next = { painted:false, color:null, weight:2 };
+        changes.push({ id, prev, next });
+        layer.setStyle({ color:'#888', weight:2, renderer:canvasRenderer });
+        layer.feature.properties.painted = false;
+        delete layer.feature.properties.color;
+        paintedCache.delete(id);
+        removePersistentPaintForId(id);
+      }
+    }
+    // also capture raw persistent polylines that don't map to segment ids (synthetic)
+    paintedLayer.eachLayer(l => {
+      // if layer is not in paintedLayerMap values (i.e., has no segment id), store it as synthetic
+      const belongsToId = Array.from(paintedLayerMap.values()).some(val => val === l);
+      if (!belongsToId) {
+        const coords = l.getLatLngs().map(p => [p.lat, p.lng]);
+        const color = l.options.color || '#ff0000';
+        changes.push({ synthetic: { coords, color } });
+      }
+    });
+    paintedLayer.clearLayers();
+    paintedLayerMap.clear();
+    paintedCache.clear();
+    if (changes.length) pushHistory({ type:'clear', changes });
+  }
+
+  function exportPaintedGeoJSON(){
+    const features=[];
+    // export everything present in paintedLayer
+    paintedLayer.eachLayer(layer => {
+      const coords = layer.getLatLngs().map(p => [p.lng, p.lat]);
+      // try to find an associated id (reverse lookup)
+      const entry = Array.from(paintedLayerMap.entries()).find(([k,v]) => v === layer);
+      const id = entry ? entry[0] : undefined;
+      const props = id ? { id, color: layer.options.color } : { color: layer.options.color };
+      features.push({ type:'Feature', geometry:{ type:'LineString', coordinates: coords }, properties: props });
+    });
+    return { type:'FeatureCollection', features };
+  }
+  function downloadGeoJSON(){
+    const data=exportPaintedGeoJSON();
+    const blob=new Blob([JSON.stringify(data,null,2)],{ type:'application/json' });
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='painted-roads.geojson'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+
+  // Import: accept features with id (segmentId) or raw LineStrings (no id)
+  function importPaintedGeoJSON(geojson) {
+    if (!geojson.features || !Array.isArray(geojson.features)) return;
+    const changes = [];
+    for (const f of geojson.features) {
+      if (f.geometry?.type !== 'LineString') continue;
+      const coords = f.geometry.coordinates; // [lng,lat] pairs
+      const latlngs = coords.map(c => L.latLng(c[1], c[0]));
+      const color = f.properties?.color || '#ff0000';
+      const newWeight = Math.max(3, Math.round(brushSize / 8));
+      const id = f.properties?.id;
+      if (id) {
+        // If the base segment exists, style and create persistent; otherwise write to cache and create persistent copy using geometry.
+        paintedCache.set(id, { painted: true, color, weight: newWeight });
+        // apply to base segment if present
+        const baseLayer = idToLayer.get(id);
+        if (baseLayer) {
+          baseLayer.setStyle({ color, weight: newWeight, renderer: canvasRenderer });
+          baseLayer.feature = baseLayer.feature || {}; baseLayer.feature.properties = { ...(baseLayer.feature.properties || {}), painted:true, color };
+        }
+        // create persistent copy if not exists
+        if (!paintedLayerMap.has(id)) {
+          // if baseLayer exists, prefer its exact latlngs, else use imported latlngs
+          const ll = baseLayer ? baseLayer.getLatLngs() : latlngs;
+          createPersistentPaint(ll, color, newWeight, id);
+        }
+        changes.push({ id, prev: null, next: { painted: true, color, weight: newWeight } });
+      } else {
+        // raw polyline import -> persistent only (synthetic)
+        const paintPoly = createPersistentPaint(latlngs, color, newWeight, null);
+        // store change with synthetic payload so we can undo
+        changes.push({ synthetic: { coords: latlngs.map(p => [p.lat, p.lng]), color } });
+      }
+    }
+    if (changes.length) pushHistory({ type: 'import', changes });
+  }
+
+  </script>
+</body>
+</html>
