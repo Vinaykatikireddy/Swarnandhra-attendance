@@ -13,27 +13,36 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 DEFAULT_TIMEOUT = 10
 
 def extract_student_details(reg_no: str):
-    response = requests.post(SWARNANDHRA_URL, data={"search": reg_no}, timeout=DEFAULT_TIMEOUT)
+    response = requests.post(
+        SWARNANDHRA_URL,
+        data={"search": reg_no},
+        timeout=DEFAULT_TIMEOUT
+    )
+
     if response.status_code != 200:
         return None
 
     soup = BeautifulSoup(response.text, "lxml")
-    card = soup.find("div", class_="student-card")
-    if not card:
+    cards = soup.find_all("div", class_="student-card")
+    if not cards:
         return None
 
-    regid = card.find("div", class_="card-reg-id").get_text(strip=True)
-    name = card.find("div", class_="card-name").get_text(strip=True)
+    students = {}
 
-    info_rows = card.find_all("div", class_="card-info-row")
-    details = {"Name": name, "regid": regid}
+    for card in cards:
+        regid = card.find("div", class_="card-reg-id").get_text(strip=True)
+        name = card.find("div", class_="card-name").get_text(strip=True)
 
-    for row in info_rows:
-        label = row.find("span", class_="card-label").get_text(strip=True).replace(":", "")
-        value = row.find("span", class_="card-value").get_text(strip=True)
-        details[label] = value
+        info = {"name": name, "regid": regid}
+        for row in card.find_all("div", class_="card-info-row"):
+            label = row.find("span", class_="card-label").get_text(strip=True).rstrip(":")
+            value = row.find("span", class_="card-value").get_text(strip=True)
+            info[label] = value
 
-    return details
+        students[regid] = info
+
+    return students
+
 
 def asp_hidden(session, url):
     if session:
@@ -330,42 +339,47 @@ def main(college_reg_no, client_ip):
     except requests.RequestException:
         pass
 
-    student = extract_student_details(college_reg_no)
-    dob, college_image = extract_dob_college_img(student['regid'])
-
-    if not student:
-        result = {"mode": "error", "message": "Invalid reg no"}
-        return result
-
-    student["college_image"]=college_image
-
-    hall_ticket = search_hallticket(student["Name"][:30])
-    if not hall_ticket:
-        result = {"mode": "basic", "student": student}
-        return result
-
-    student["inter_memo"] = extract_inter_memo(hall_ticket, dob)
+    students = extract_student_details(college_reg_no)
     
-    for mobile in [student.get("Mobile"), student.get("Father Mobile")]:
-        if not mobile:
-            continue
-        pid = fetch_payment_id(hall_ticket, mobile, dob)
-        if pid:
-            break
+    if len(students) == 1:
+        student = next(iter(students.values()), None)
+        dob, college_image = extract_dob_college_img(student['regid'])
+
+        if not student:
+            result = {"mode": "error", "message": "Invalid reg no"}
+            return result
+
+        student["college_image"]=college_image
+        print(student.keys())
+        hall_ticket = search_hallticket(student['name'][:30])
+        if not hall_ticket:
+            result = {"mode": "basic", "student": student}
+            return result
+
+        student["inter_memo"] = extract_inter_memo(hall_ticket, dob)
+        
+        for mobile in [student.get("Mobile"), student.get("Father Mobile")]:
+            if not mobile:
+                continue
+            pid = fetch_payment_id(hall_ticket, mobile, dob)
+            if pid:
+                break
+        else:
+            result = {"mode": "basic", "student": student}
+            return result
+        regno = fetch_regno(pid, hall_ticket, mobile, dob)
+        if not regno:
+            result = {"mode": "basic", "student": student}
+            return result
+        html = fetch_application_html(pid, regno, hall_ticket, mobile, dob)
+        aadhaar_no, student["eapcet_photo"] = extract_aadhaar_and_eapcet_photo(html)
+        student["Aadhaar"]=aadhaar_no
+        student["eapcet_application"]=html
+        
+        result = {
+            "mode": "full",
+            "student": student
+        }
+        return result
     else:
-        result = {"mode": "basic", "student": student}
-        return result
-    regno = fetch_regno(pid, hall_ticket, mobile, dob)
-    if not regno:
-        result = {"mode": "basic", "student": student}
-        return result
-    html = fetch_application_html(pid, regno, hall_ticket, mobile, dob)
-    aadhaar_no, student["eapcet_photo"] = extract_aadhaar_and_eapcet_photo(html)
-    student["Aadhaar"]=aadhaar_no
-    student["eapcet_application"]=html
-    
-    result = {
-        "mode": "full",
-        "student": student
-    }
-    return result
+        return students

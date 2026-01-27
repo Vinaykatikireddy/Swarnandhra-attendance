@@ -350,9 +350,9 @@ footer{
 </footer>
 
 <script>
-  if (window.location.hostname !== "swarnandhra-student-dashboard.vercel.app") {
-    window.location.href = "https://swarnandhra-student-dashboard.vercel.app";
-  }
+  //if (window.location.hostname !== "swarnandhra-student-dashboard.vercel.app") {
+  //  window.location.href = "https://swarnandhra-student-dashboard.vercel.app";
+  //}
 
 
 const form = document.getElementById('form');
@@ -477,7 +477,6 @@ async function fetchWithQueue(
 
 
 function showMessage(html){ output_block.innerHTML = `<div class="card">${html}</div>`; }
-function findRegId(student){ for(const k of Object.keys(student)){ if(k.toLowerCase().includes('A2')) return student[k]; } return student.regid ||''; }
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -524,11 +523,22 @@ form.addEventListener('submit', async (e) => {
       return showMessage(data.message || 'Error fetching student');
 
     useful_links.style.display = 'none';
-    renderStudentCard(data.student || {"":""});
+    if ('mode' in data) {
+      renderStudentCard(data.student || {}, true);
+    } else {
+      Object.values(data).forEach(student => {
+        renderStudentCard(student, false);
+      });
+    }
 
   } catch (err) {
     showMessage('Request failed: ' + (err.message || err));
   } finally {
+    displayFeedbackForm();
+    let last_part = '';
+    last_part += `<br><br><button style="margin-left:5px" onclick="sharePage()">Share this website</button>`;
+    last_part += `<br><br><p style="margin-left:5px">If anything is wrong, simply try again after some time.</p>`;
+    output_block.appendChild(document.createRange().createContextualFragment(last_part));
     btn.disabled = false;
     if (btn._loader) {
       btn._loader.remove();
@@ -539,8 +549,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-function renderStudentCard(student){
-  output_block.innerHTML = '';
+function renderStudentCard(student, single_user){
   const card = document.createElement('div');
   card.className = 'student-card';
 
@@ -575,22 +584,18 @@ function renderStudentCard(student){
 
   html += `</div><div style="margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap">`;
   
-  const rid = findRegId(student);
+  const rid = student.regid||"";
   semester = student.Semester.slice(4)||"Fourth semester";
   console.log(semester, student);
   const eapApp = btoa(unescape(encodeURIComponent(student.eapcet_application || '')));
   if(rid) html += `<br><button onclick="onViewAttendance('${rid}', '${semester}')">View Attendance😍</button>`;
-  html += `<button onclick="onViewResults('${rid}')">View College Results</button>`;
+  if(rid && single_user) html += `<button onclick="onViewResults('${rid}')">View College Results</button>`;
   if(student.inter_memo){ html += `<button onclick="onViewInterMemo('${student.inter_memo}')">View Inter Memo</button>`; }
   if(eapApp){ html += `<button onclick="onViewEapcetApp('${eapApp}')">View EAPCET Application</button>`; }
-  html += `<br><br><button onclick="sharePage()">Share this website</button>`;
-
-  html += `<br><br><p>If anything is wrong, simply try again after some time.</p>`;
+  
 
   card.innerHTML = html;
   output_block.appendChild(card);
-
-  displayFeedbackForm()
 }
 
 function displayFeedbackForm() {
