@@ -10,13 +10,10 @@ BET_E_PORTAL = "https://www.swarnandhraexambranch.com/"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
-session = requests.Session()
-session.headers.update(HEADERS)
-
 DEFAULT_TIMEOUT = 10
 
 def extract_student_details(reg_no: str):
-    response = session.post(SWARNANDHRA_URL, data={"search": reg_no}, timeout=DEFAULT_TIMEOUT)
+    response = requests.post(SWARNANDHRA_URL, data={"search": reg_no}, timeout=DEFAULT_TIMEOUT)
     if response.status_code != 200:
         return None
 
@@ -39,7 +36,11 @@ def extract_student_details(reg_no: str):
     return details
 
 def asp_hidden(session, url):
-    r = session.get(url, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
+    if session:
+        r = session.get(url, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
+    else:
+        r = requests.get(url, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
+
     return extract_hidden(r.text)
 
 def extract_hidden(html):
@@ -55,9 +56,9 @@ def extract_hidden(html):
     }
 
 
-def fetch_payment_id(session, hall_ticket, mobile_no, dob):
+def fetch_payment_id(hall_ticket, mobile_no, dob):
     url = "https://cets.apsche.ap.gov.in/EAPCET24/Eapcet/EAPCET_PaymentStatus.aspx"
-    h = asp_hidden(session, url)
+    h = asp_hidden(None, url)
     payload = {
         "__VIEWSTATE": h.get("__VIEWSTATE",""),
         "__EVENTVALIDATION": h.get("__EVENTVALIDATION",""),
@@ -69,14 +70,14 @@ def fetch_payment_id(session, hall_ticket, mobile_no, dob):
         "ctl00$EapcetpageContent$btnCheckPaymentStatus": "Check Payment Status"
     }
 
-    r = session.post(url, data=payload, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
+    r = requests.post(url, data=payload, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
     soup = BeautifulSoup(r.text, "lxml")
     span = soup.find("span", id=lambda x: x and "lblPaymentRefID" in x)
     return span.text.strip() if span else None
 
 
-def search_hallticket(session, name):
-    r = session.post(INDIARESULTS_URL, data={"name": name}, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
+def search_hallticket(name):
+    r = requests.post(INDIARESULTS_URL, data={"name": name}, headers=HEADERS, timeout=DEFAULT_TIMEOUT)
     soup = BeautifulSoup(r.text, "lxml")
     table = soup.find("table", id="GridView1")
     if not table:
@@ -89,7 +90,10 @@ def search_hallticket(session, name):
             return cols[2]
     return None
 
-def login_student(session, regd):
+def login_student(regd):
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
     login_url = BET_E_PORTAL + "/Login.aspx"
 
     # Step 1: initial load
@@ -116,12 +120,12 @@ def login_student(session, regd):
 
     # Auth verification
     if ".ASPXAUTH" not in session.cookies.get_dict():
-        return False
-    return True
+        return False, session
+    return True, session
 
 
 def extract_dob_college_img(regd):
-    log_in = login_student(session, regd)
+    log_in, session = login_student(regd)
     if not log_in:
         return None, None
 
@@ -198,9 +202,9 @@ def extract_inter_memo(inter_hall_ticket, dob):
     
     return None
 
-def fetch_application_html(session, pid, regno, hall_ticket, mobile_no, dob):
+def fetch_application_html(pid, regno, hall_ticket, mobile_no, dob):
     url = "https://cets.apsche.ap.gov.in/EAPCET24/Eapcet/EAPCET_GetPrintApplication.aspx"
-    h = asp_hidden(session, url)
+    h = asp_hidden(None, url)
 
     payload = {
         "__VIEWSTATE": h["__VIEWSTATE"],
@@ -213,17 +217,17 @@ def fetch_application_html(session, pid, regno, hall_ticket, mobile_no, dob):
         "ctl00$EapcetpageContent$btnVerification": "Get Application Details"
     }
 
-    r = session.post(url, data=payload, headers=HEADERS)
+    r = requests.post(url, data=payload, headers=HEADERS)
     soup = BeautifulSoup(r.text, "lxml")
     a = soup.find("a")
     if a:
-        return session.get(urljoin(url, a["href"]), headers=HEADERS).text
+        return requests.get(urljoin(url, a["href"]), headers=HEADERS).text
     return r.text
 
 
-def fetch_regno(session, pid, hall_ticket, mobile_no, dob):
+def fetch_regno(pid, hall_ticket, mobile_no, dob):
     url = "https://cets.apsche.ap.gov.in/EAPCET24/Eapcet/EAPCET_ApplicationStatus.aspx"
-    h = asp_hidden(session, url)
+    h = asp_hidden(None, url)
 
     payload = {
         "__VIEWSTATE": h["__VIEWSTATE"],
@@ -236,8 +240,8 @@ def fetch_regno(session, pid, hall_ticket, mobile_no, dob):
         "ctl00$EapcetpageContent$btnRegistrationStatus": "Submit"
     }
 
-    r = session.post(url, data=payload, headers=HEADERS)
-    soup = BeautifulSoup(r.text, "lxml")      
+    r = requests.post(url, data=payload, headers=HEADERS)
+    soup = BeautifulSoup(r.text, "lxml")
     span = soup.find("span", id=lambda x: x and "lblRegistration" in x)
     if not span:
         return None
@@ -248,6 +252,10 @@ def fetch_regno(session, pid, hall_ticket, mobile_no, dob):
 def fetch_results(regd):
     #Load final marks page
     final_url = BET_E_PORTAL + "/StudentLogin/Student/overallMarks.aspx"
+    log_in, session = login_student(regd)
+    if not log_in:
+        return None
+
     r = session.get(final_url)
 
     if "BET e-Portal Login" in r.text:
@@ -331,37 +339,33 @@ def main(college_reg_no, client_ip):
 
     student["college_image"]=college_image
 
-    with requests.Session() as s:
-        hall_ticket = search_hallticket(s, student["Name"][:30])
-        if not hall_ticket:
-            result = {"mode": "basic", "student": student}
-            return result
-
-        student["inter_memo"] = extract_inter_memo(hall_ticket, dob)
-        
-        for mobile in [student.get("Mobile"), student.get("Father Mobile")]:
-            if not mobile:
-                continue
-            pid = fetch_payment_id(s, hall_ticket, mobile, dob)
-            if pid:
-                break
-        else:
-            result = {"mode": "basic", "student": student}
-            return result
-
-        regno = fetch_regno(s, pid, hall_ticket, mobile, dob)
-        if not regno:
-            result = {"mode": "basic", "student": student}
-            return result
-
-        html = fetch_application_html(s, pid, regno, hall_ticket, mobile, dob)
-        aadhaar_no, student["eapcet_photo"] = extract_aadhaar_and_eapcet_photo(html)
-
-        student["Aadhaar"]=aadhaar_no
-        student["eapcet_application"]=html
-        
-        result = {
-            "mode": "full",
-            "student": student
-        }
+    hall_ticket = search_hallticket(student["Name"][:30])
+    if not hall_ticket:
+        result = {"mode": "basic", "student": student}
         return result
+
+    student["inter_memo"] = extract_inter_memo(hall_ticket, dob)
+    
+    for mobile in [student.get("Mobile"), student.get("Father Mobile")]:
+        if not mobile:
+            continue
+        pid = fetch_payment_id(hall_ticket, mobile, dob)
+        if pid:
+            break
+    else:
+        result = {"mode": "basic", "student": student}
+        return result
+    regno = fetch_regno(pid, hall_ticket, mobile, dob)
+    if not regno:
+        result = {"mode": "basic", "student": student}
+        return result
+    html = fetch_application_html(pid, regno, hall_ticket, mobile, dob)
+    aadhaar_no, student["eapcet_photo"] = extract_aadhaar_and_eapcet_photo(html)
+    student["Aadhaar"]=aadhaar_no
+    student["eapcet_application"]=html
+    
+    result = {
+        "mode": "full",
+        "student": student
+    }
+    return result
