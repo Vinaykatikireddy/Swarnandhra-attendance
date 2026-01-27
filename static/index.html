@@ -677,7 +677,6 @@ async function onViewAttendance(regid, semester){
   modal.classList.remove('hidden');
 
   try {
-    const btn = form.querySelector('button');
     const res = await fetchWithQueue(
   '/attendance',
   {
@@ -735,7 +734,10 @@ function onViewResults(regid){
           body: new URLSearchParams({ regid }),
           }
         );
-const data = await res.json();
+        if(res.status === 429){
+          modalContent.innerHTML = `<div>Server is busy. Please try again later.</div>`;
+        }
+        const data = await res.json();
     
         let html = data.html;
 
