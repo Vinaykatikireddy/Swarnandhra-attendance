@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 import threading
+import os
 
 from backend_logic import (
     main,
@@ -98,4 +99,5 @@ def api_feedback():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, threaded=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, threaded=True)
