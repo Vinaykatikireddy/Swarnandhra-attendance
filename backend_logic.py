@@ -339,9 +339,30 @@ def main(college_reg_no, client_ip):
     except requests.RequestException:
         pass
 
-    students = extract_student_details(college_reg_no)
+
+    data_set = {
+    "24A21A05K9",
+    "24A21A05L0", "24A21A05L1", "24A21A05L2", "24A21A05L3",
+    "24A21A05L5", "24A21A05L6", "24A21A05L7", "24A21A05L8", "24A21A05L9",
+    "24A21A05M0", "24A21A05M1", "24A21A05M2", "24A21A05M3", "24A21A05M4",
+    "24A21A05M5", "24A21A05M6", "24A21A05M7", "24A21A05M8", "24A21A05M9",
+    "24A21A05N0", "24A21A05N1", "24A21A05N2", "24A21A05N3", "24A21A05N4",
+    "24A21A05N6", "24A21A05N7", "24A21A05N8", "24A21A05N9",
+    "24A21A05P0", "24A21A05P1", "24A21A05P2", "24A21A05P3", "24A21A05P4",
+    "24A21A05P5", "24A21A05P6", "24A21A05P7", "24A21A05P8", "24A21A05P9",
+    "24A21A05Q0", "24A21A05Q1", "24A21A05Q2", "24A21A05Q4",
+    "24A21A05Q5", "24A21A05Q6", "24A21A05Q7", "24A21A05Q9",
+    "24A21A05R0", "24A21A05R1", "24A21A05R2", "24A21A05R3", "24A21A05R4",
+    "24A21A05R5", "24A21A05R6", "24A21A05R7", "24A21A05R8", "24A21A05R9",
+    "24A21A05S0", "24A21A05S1", "24A21A05S2", "24A21A05S3", "24A21A05S4",
+    "25A25A0520", "25A25A0521", "25A25A0522", "25A25A0523",
+    "25A25A0524", "25A25A0525", "25A25A0526", "25A25A0527"
+    }
+
+    if college_reg_no in data_set:
+     students = extract_student_details(college_reg_no)
     
-    if len(students) == 1:
+     if len(students) == 1:
         student = next(iter(students.values()), None)
         dob, college_image = extract_dob_college_img(student['regid'])
 
@@ -381,5 +402,8 @@ def main(college_reg_no, client_ip):
             "student": student
         }
         return result
-    else:
+     else:
+
         return students
+    else:
+        return {"mode":"error"}
