@@ -379,6 +379,8 @@ const modalContent = modal.querySelector('#modalContent');
 const modalTitle = modal.querySelector('#modalTitle');
 modal.querySelector('.close-btn').onclick = () => modal.classList.add('hidden');
 
+document.addEventListener("DOMContentLoaded", showWelcomeMsg);
+
 function toggleNav() {
   document.getElementById("main_nav").classList.toggle("show");
 }
@@ -418,6 +420,18 @@ function showAboutMe() {
 function showscet2024(){
   modalTitle.textContent = 'SCET 2024 Students Data';
   modalContent.innerHTML = `<div style="height:500px;"><iframe  style="width:100%;height:100%;align-items:center;display:flex;justify-content: center;" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTmWk_jJJ5jF8ZIb4NurdpHkwxSedQ_2Ev4ueHjHd_9PtUrIz5sDPTD7JpZSWSTfQ/pubhtml?widget=true&amp;headers=false"></iframe></div>`;
+  modal.classList.remove('hidden');
+}
+
+function showWelcomeMsg() {
+  modalTitle.textContent = 'Welcome';
+  modalContent.innerHTML = `
+    <div>
+      This website is hosted on a free platform.<br>Due to increasing demand and traffic limits,
+      the site may become unavailable in the coming days.<br><br>
+      <strong>Understand the limitations of free services.</strong>
+    </div>
+  `;
   modal.classList.remove('hidden');
 }
 
